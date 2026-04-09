@@ -93,7 +93,7 @@ export default function ExponentesPage() {
   return (
     <main id="main" className="pb-20">
       {/* Hero Section */}
-      <section className="px-6 mb-16 border-b-2 border-primary pb-8 pt-4">
+      <section className="px-4 sm:px-6 mb-16 border-b-2 border-primary pb-8 pt-4">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <h1 className="text-[10vw] md:text-[6vw] leading-[0.85] font-black uppercase font-headline tracking-tighter text-primary animate-reveal-up">
             EXPONENTES
@@ -116,7 +116,7 @@ export default function ExponentesPage() {
       {/* Speakers Editorial Index */}
       <section className="px-0">
         {/* Table Header */}
-        <div className="px-6 grid grid-cols-12 gap-4 pb-4 border-b border-outline-variant items-center opacity-50 hidden md:grid animate-fade-in stagger-2">
+        <div className="px-4 sm:px-6 grid grid-cols-12 gap-4 pb-4 border-b border-outline-variant items-center opacity-50 hidden md:grid animate-fade-in stagger-2">
           <div className="col-span-1 mono-data text-[10px] uppercase tracking-widest">
             Estado
           </div>
@@ -135,24 +135,25 @@ export default function ExponentesPage() {
         {speakers.map((speaker, index) => (
           <div
             key={speaker.name}
-            className={`group px-6 py-10 border-b border-outline-variant hover:bg-surface-container-low transition-colors duration-200 animate-fade-up ${staggerClasses[index]}`}
+            className={`group px-4 sm:px-6 py-10 border-b border-outline-variant hover:bg-surface-container-low transition-colors duration-200 animate-fade-up ${staggerClasses[index]}`}
           >
-            <div className="grid grid-cols-12 gap-4 items-center">
+            <div className="grid grid-cols-12 gap-2 sm:gap-4 items-center">
               <div className="col-span-12 md:col-span-1 mb-4 md:mb-0">
                 <StatusBadge status={speaker.status} />
               </div>
-              <div className="col-span-12 md:col-span-5 flex items-center gap-6">
-                <div className="w-24 h-24 flex-shrink-0 grayscale group-hover:grayscale-0 transition-all duration-500 relative overflow-hidden">
+              <div className="col-span-12 md:col-span-5 flex items-center gap-4 sm:gap-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 grayscale group-hover:grayscale-0 transition-all duration-500 relative overflow-hidden">
                   <Image
                     src={speaker.image}
                     alt={speaker.name}
                     fill
+                    sizes="(min-width: 768px) 96px, (min-width: 640px) 80px, 64px"
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 border-l-4 border-transparent group-hover:border-secondary transition-colors duration-300" />
                 </div>
                 <div>
-                  <h2 className="text-3xl md:text-5xl font-black font-headline tracking-tighter uppercase leading-none text-primary">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-black font-headline tracking-tighter uppercase leading-none text-primary">
                     {speaker.name}
                   </h2>
                   <p className="mono-data text-xs uppercase text-on-primary-container mt-1">
@@ -161,12 +162,12 @@ export default function ExponentesPage() {
                 </div>
               </div>
               <div className="col-span-12 md:col-span-4">
-                <h3 className="text-xl font-bold leading-tight max-w-sm uppercase text-primary group-hover:translate-x-1 transition-transform duration-300">
+                <h3 className="text-base sm:text-lg md:text-xl font-bold leading-tight max-w-sm uppercase text-primary group-hover:translate-x-1 transition-transform duration-300">
                   {speaker.talk}
                 </h3>
               </div>
-              <div className="col-span-12 md:col-span-2 text-right">
-                <p className="mono-data text-2xl font-bold tracking-tighter text-primary">
+              <div className="col-span-12 md:col-span-2 text-left md:text-right">
+                <p className="mono-data text-lg sm:text-2xl font-bold tracking-tighter text-primary">
                   {speaker.time}
                 </p>
                 <p className="mono-data text-[10px] uppercase opacity-60">
@@ -179,16 +180,16 @@ export default function ExponentesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="mt-20 px-6 animate-fade-up stagger-7">
-        <div className="bg-primary p-12 text-center">
-          <h2 className="text-4xl md:text-6xl font-black text-white uppercase font-headline tracking-tighter mb-6">
+      <section className="mt-20 px-4 sm:px-6 animate-fade-up stagger-7">
+        <div className="bg-primary p-6 sm:p-8 md:p-12 text-center">
+          <h2 className="text-2xl sm:text-4xl md:text-6xl font-black text-white uppercase font-headline tracking-tighter mb-6">
             &iquest;QUIERES SER PARTE DEL PANEL?
           </h2>
           <p className="text-on-primary-container max-w-2xl mx-auto mb-10 text-lg">
             La convocatoria para rel&aacute;mpagos (lightning talks) sigue
             abierta para desarrolladores locales.
           </p>
-          <button className="bg-secondary text-white px-10 py-4 font-black uppercase tracking-widest text-sm hover:scale-105 transition-transform duration-200 btn-shine">
+          <button className="bg-secondary text-white px-6 py-3 sm:px-10 sm:py-4 font-black uppercase tracking-widest text-sm hover:scale-105 transition-transform duration-200 btn-shine min-h-[48px]">
             APLICAR AHORA
           </button>
         </div>

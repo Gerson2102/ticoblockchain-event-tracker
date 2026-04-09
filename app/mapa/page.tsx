@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 export default function MapaPage() {
   return (
     <main id="main" className="pb-20">
-      <section className="px-6 md:px-12">
+      <section className="px-4 sm:px-6 md:px-12">
         <div className="flex flex-col md:flex-row justify-between items-baseline mb-12 pt-8">
-          <h1 className="text-7xl md:text-9xl font-headline font-black uppercase tracking-tighter text-primary animate-reveal-up">
+          <h1 className="text-5xl sm:text-7xl md:text-9xl font-headline font-black uppercase tracking-tighter text-primary animate-reveal-up">
             MAPA
           </h1>
           <div className="mt-4 md:mt-0 mono-data text-primary flex items-center gap-2">
@@ -47,7 +47,7 @@ export default function MapaPage() {
                 </li>
               </ul>
             </div>
-            <div className="mt-12 bg-secondary p-4 flex items-center gap-3">
+            <div className="mt-8 sm:mt-12 bg-secondary p-3 sm:p-4 flex items-center gap-3">
               <span
                 className="material-symbols-outlined text-white"
                 style={{ fontVariationSettings: `"FILL" 1` }}
@@ -61,8 +61,8 @@ export default function MapaPage() {
           </div>
 
           {/* Flat Floorplan Canvas */}
-          <div className="lg:col-span-9 bg-surface-container-low min-h-[600px] relative overflow-hidden p-8 flex items-center justify-center">
-            <div className="w-full h-full max-w-4xl relative border-2 border-primary-container/20 min-h-[500px]">
+          <div className="lg:col-span-9 bg-surface-container-low min-h-[300px] sm:min-h-[400px] md:min-h-[500px] lg:min-h-[600px] relative overflow-hidden p-8 flex items-center justify-center">
+            <div className="w-full h-full max-w-4xl relative border-2 border-primary-container/20 min-h-[250px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[500px]">
               {/* Floorplan Grid Background */}
               <div className="absolute inset-0 bg-white grid grid-cols-6 grid-rows-6 opacity-40">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -75,21 +75,21 @@ export default function MapaPage() {
 
               {/* Room A */}
               <div className="absolute top-10 left-10 w-2/3 h-1/2 bg-primary-container border-2 border-primary flex items-center justify-center">
-                <span className="text-white font-headline font-black text-4xl uppercase opacity-20">
+                <span className="text-white font-headline font-black text-xl sm:text-2xl md:text-4xl uppercase opacity-20">
                   SALA A
                 </span>
               </div>
 
               {/* Room B */}
               <div className="absolute bottom-10 left-10 w-1/3 h-1/3 bg-surface-variant border-2 border-primary flex items-center justify-center">
-                <span className="text-primary font-headline font-black text-2xl uppercase opacity-20">
+                <span className="text-primary font-headline font-black text-sm sm:text-lg md:text-2xl uppercase opacity-20">
                   SALA B
                 </span>
               </div>
 
               {/* Room C */}
               <div className="absolute bottom-10 right-10 w-1/2 h-1/3 bg-white border-2 border-primary flex items-center justify-center">
-                <span className="text-primary font-headline font-black text-2xl uppercase opacity-20">
+                <span className="text-primary font-headline font-black text-sm sm:text-lg md:text-2xl uppercase opacity-20">
                   SALA C
                 </span>
               </div>
@@ -100,7 +100,7 @@ export default function MapaPage() {
                   Est&aacute;s aqu&iacute;
                 </div>
                 <span
-                  className="material-symbols-outlined text-secondary text-5xl"
+                  className="material-symbols-outlined text-secondary text-3xl sm:text-4xl md:text-5xl"
                   style={{ fontVariationSettings: `"FILL" 1` }}
                 >
                   location_on
@@ -109,7 +109,7 @@ export default function MapaPage() {
 
               {/* Entrance */}
               <div className="absolute top-0 right-1/4 w-20 h-4 bg-primary" />
-              <div className="absolute top-4 right-1/4 text-[10px] mono-data uppercase tracking-tighter -rotate-90 origin-top-right">
+              <div className="absolute top-4 right-1/4 text-[8px] sm:text-[10px] mono-data uppercase tracking-tighter rotate-0 sm:-rotate-90 sm:origin-top-right">
                 Entrada Principal
               </div>
             </div>
