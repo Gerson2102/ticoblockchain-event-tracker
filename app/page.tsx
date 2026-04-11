@@ -2,15 +2,15 @@ import Image from "next/image";
 import DepartureRow from "./components/DepartureRow";
 import Icon from "./components/Icon";
 import SessionCard from "./components/SessionCard";
+import { HERO_CONTENT, BENTO_HIGHLIGHTS } from "./data/home-content";
 import { SESSIONS, getLiveSessions, getNextSessions } from "./data/sessions";
 import type { Session } from "./data/types";
+import { VENUE } from "./data/venue";
 
 // Sorted once per render pass — cheap for ~21 sessions.
 function sortByStartTime(sessions: readonly Session[]): Session[] {
   return [...sessions].sort((a, b) => a.startTime.localeCompare(b.startTime));
 }
-import { HERO_CONTENT, BENTO_HIGHLIGHTS } from "./data/home-content";
-import { VENUE } from "./data/venue";
 
 const STAGGER_CLASSES = [
   "stagger-1",

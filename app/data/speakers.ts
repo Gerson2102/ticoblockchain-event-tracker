@@ -2,17 +2,29 @@ import type { Speaker } from "./types";
 
 // Confirmed speakers for TicoBlockchain 2026 — 24 MAYO.
 // Ordered by next appearance. Exactly one is "live" at a time.
-// Image URLs are placeholders (rotating pool) pending real portraits.
-const IMG_A =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuC9-JCtp8F0cgSj2KjRr100CkoH8_wiYW1f8vqcHDKHtufJVMhckuwZMQtOGRUHJBpRfMsr4mcGRBM_G_s1wUMmDosB1bYROWDAVvvwk-QNX1ILgz3u-LEBQ1yZ0YwBuz7vP83MTTwZRkddaqLhHsdDHzMxG7EIelpLWFCRD-fPGsLIVperWLFre4Blxz8mvl_1sLIIOZB6Vdkh_KLnEzZwLJNtw7SYSmGpTY4WtVYbsw6laelVmkvJuYfby3OSGbjXXgJx96oBrBM";
-const IMG_B =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCiipefm9FgmLvq0ikyF72wz6PVbHZyK7pgwX-8ScF_VoT7oSaNaAV_G2lk8KurgDobC9vjFeVPEtFxJRuJpPkwzLoEZT8w0ENP7UNC2aAjtYl8rEgZQdDnSCHdIK-5bwi2CgWXiSBajYiRK3SrdCnpE6V_UH-F239zdjKZFXpWEsyfg8df9_FYXuKX05L7K2PoykPmOCqs8o_acK5f2ifXRNpR42xWEz0NIgDdjreH1h8FGFWcS_qeld2NyB5VfQEt97HX_J3ddnM";
-const IMG_C =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBZX5dueRZk_dLql5HtVAqeWVM9fUrrc3Zxc0Dz1VgD0Ksh1szN0IzkPRW-JFjIZH7XHjtSW5K9sTKRbzZsxA4l5x4GWfCxGRa2sVvUlQge8IQRi8M6WNK3mtGf2lWF5HyaF8B9_vMP5jNgppJ56udcrdZcG7niHjXt-g_mu7Yl2Wvrl49UZb0ucdzomY2hdQ4yM2CodsJnWHRlNGL3uxf7AGOM5_JLwKlEJx4tzuEe_S6QQHxItQhDCUWkTYO_JnN65puTo_7YXMw";
-const IMG_D =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCihZQQz0UI-YiU2HidlxlndNs8vDvdDovdrPvukFAigl7kCDRd9J8XYv355pSWjR1SFT3DAzURCcrP7Jom4_Qf4T3qOfNaMqEyDjMZmlESQZlsdVrQQwsd1BvkF-JZXrr65xdfLoY5ckRR5evfNN0V4eOCIxGIsvFl7rG5jnuC8ruB1egcq0un8pBIu1xEOwrFcmV1qz0Xy76ZZ5wJ_9az4zAEnbVdVsWPyZjj9TbBvqG5F2mlLRBgwRUihTJNkyk4tV6G-eHhvw0";
-const IMG_E =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuAuRImHGJbqTn-MiEgbcaDQRJNIdFY8gtECGQ-1McEioSLXmUNyxOgVcfYcc5Kr1adw4YEGcdqejpvEJ64nAIX_kTmXyjYAxShH7jRnZbQkWp6xM6K6JqyhNotKCz2rp7SlIliBXjPOlhDDoM_9lVnpt5Y4fZORBtFg9rhH002yl94OKclUElV-TE88V7pNbTJJ_2W4UFkBEk2W6Y3W3uxcrGbRDYNMWLHlrq9Nth3ra5HjM3av2Qk8oaQRdokIwmUQRRYOt08LqXw";
+//
+// Portrait URLs are pulled from the official ticoblockchain.cr site
+// (cdn.prod.website-files.com). Whitelisted in next.config.ts.
+
+const CDN = "https://cdn.prod.website-files.com/6744c862a5d9324c919d6b4d";
+
+// Official portraits — one per confirmed speaker on ticoblockchain.cr
+const IMG_DANIEL_CALDERON = `${CDN}/67d6c61eee11dca78ec6021b_Screenshot2.avif`;
+const IMG_DIEGO_LOAIZA = `${CDN}/67d6c54fe994495169f9271e_Diego%20Loaiza%20Centeno%202.avif`;
+const IMG_KARLA_CORDOBA = `${CDN}/675c37edeca90d4c739eee46_KarlaC_JTS-22%20(p).avif`;
+const IMG_ROGELIO_MARTINEZ = `${CDN}/69b1647566e862a48f42e86e_rogelio%20martinez.jpg`;
+const IMG_JADDY_FERNANDEZ = `${CDN}/69b164ddcdb2ae14a989d05a_Jaddy%20Fernandez.jpg`;
+const IMG_STEPHANIE_SANCHEZ = `${CDN}/67dd4ba9bd7e331b594ea0bf_Screenshot4.avif`;
+const IMG_JOSE_MIGUEL_ZAMORA = `${CDN}/675c3780bd959b632317034d_jose%20miguel%20zamora.avif`;
+const IMG_RANDALL_BARQUERO = `${CDN}/67d029a93702b2c591a8ce34_Randall%20Barquero%202025.avif`;
+const IMG_ROBERTO_PONCE = `${CDN}/69b165f3ed6981db28554231_roberto%20ponce%20romay.jpg`;
+const IMG_CARLOS_RENE = `${CDN}/69adda1a8b7cb04006a35843_Carlos.png`;
+const IMG_ANDY_GUZMAN = `${CDN}/69b1632ad8361e61e604f16a_Andy%20Guzman.jpeg`;
+const IMG_JORGE_MORA = `${CDN}/69b166db6b3cda83debb0b55_jorge%20mora%20flores.jpg`;
+
+// Speakers without a real portrait on the official site — official site
+// uses a generic placeholder for these as well.
+const IMG_TBA = `${CDN}/67e29d86c819abd198b2e8cc_Screenshot%20(25).avif`;
 
 export const SPEAKERS: readonly Speaker[] = [
   {
@@ -23,7 +35,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "09:10 — 09:55",
     stage: "main",
     status: "past",
-    imageUrl: IMG_C,
+    imageUrl: IMG_DANIEL_CALDERON,
   },
   {
     id: "diego-loaiza-centeno",
@@ -33,7 +45,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "10:00 — 10:25",
     stage: "main",
     status: "live",
-    imageUrl: IMG_A,
+    imageUrl: IMG_DIEGO_LOAIZA,
   },
   {
     id: "karla-cordoba-brenes",
@@ -43,7 +55,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "10:30 — 10:55",
     stage: "main",
     status: "next",
-    imageUrl: IMG_B,
+    imageUrl: IMG_KARLA_CORDOBA,
   },
   {
     id: "rogelio-martinez",
@@ -53,7 +65,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "10:30 — 10:55",
     stage: "main",
     status: "next",
-    imageUrl: IMG_C,
+    imageUrl: IMG_ROGELIO_MARTINEZ,
   },
   {
     id: "jaddy-fernandez",
@@ -63,7 +75,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "11:00 — 11:35",
     stage: "escenario-2",
     status: "scheduled",
-    imageUrl: IMG_D,
+    imageUrl: IMG_JADDY_FERNANDEZ,
   },
   {
     id: "franz-tunez",
@@ -73,7 +85,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "12:10 — 12:30",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_E,
+    imageUrl: IMG_TBA,
   },
   {
     id: "stephanie-sanchez",
@@ -83,7 +95,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "12:35 — 13:10",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_B,
+    imageUrl: IMG_STEPHANIE_SANCHEZ,
   },
   {
     id: "jose-miguel-zamora",
@@ -93,7 +105,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "13:15 — 13:35",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_A,
+    imageUrl: IMG_JOSE_MIGUEL_ZAMORA,
   },
   {
     id: "randall-barquero",
@@ -103,7 +115,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "13:15 — 13:35",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_E,
+    imageUrl: IMG_RANDALL_BARQUERO,
   },
   {
     id: "roberto-grella",
@@ -113,7 +125,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "15:10 — 15:45",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_C,
+    imageUrl: IMG_TBA,
   },
   {
     id: "steven-cabrera",
@@ -123,7 +135,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "15:10 — 15:45",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_D,
+    imageUrl: IMG_TBA,
   },
   {
     id: "roberto-ponce-romay",
@@ -133,7 +145,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "15:50 — 16:20",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_A,
+    imageUrl: IMG_ROBERTO_PONCE,
   },
   {
     id: "carlos-rene",
@@ -143,7 +155,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "15:50 — 16:20",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_E,
+    imageUrl: IMG_CARLOS_RENE,
   },
   {
     id: "andy-guzman-toledo",
@@ -153,7 +165,7 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "15:50 — 16:20",
     stage: "escenario-2",
     status: "scheduled",
-    imageUrl: IMG_B,
+    imageUrl: IMG_ANDY_GUZMAN,
   },
   {
     id: "jorge-mora-flores",
@@ -163,6 +175,6 @@ export const SPEAKERS: readonly Speaker[] = [
     time: "Por anunciar",
     stage: "main",
     status: "scheduled",
-    imageUrl: IMG_D,
+    imageUrl: IMG_JORGE_MORA,
   },
 ] as const;

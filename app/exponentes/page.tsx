@@ -62,15 +62,25 @@ export default function ExponentesPage() {
                 <StatusBadge status={speaker.status} />
               </div>
               <div className="col-span-12 md:col-span-5 flex items-center gap-4 sm:gap-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 grayscale group-hover:grayscale-0 transition-all duration-500 relative overflow-hidden">
+                <div
+                  className={`w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 flex-shrink-0 transition-all duration-500 relative overflow-hidden rounded-full ring-2 ring-primary/10 group-hover:ring-secondary ${
+                    speaker.id === "randall-barquero"
+                      ? "grayscale group-hover:grayscale-0"
+                      : ""
+                  }`}
+                >
                   <Image
                     src={speaker.imageUrl}
                     alt={speaker.name}
                     fill
-                    sizes="(min-width: 768px) 96px, (min-width: 640px) 80px, 64px"
+                    // External CDN files (Webflow) are already over-compressed
+                    // — re-encoding them adds generation loss. Local files are
+                    // high-quality originals and benefit from Next.js resizing.
+                    unoptimized={!speaker.imageUrl.startsWith("/")}
+                    quality={90}
+                    sizes="(min-width: 768px) 128px, (min-width: 640px) 96px, 80px"
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 border-l-4 border-transparent group-hover:border-secondary transition-colors duration-300" />
                 </div>
                 <div>
                   <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-black font-display tracking-tighter uppercase leading-none text-primary">
