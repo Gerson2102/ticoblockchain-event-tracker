@@ -9,7 +9,7 @@ export const VENUE = {
   timezone: "GMT-6",
 } as const;
 
-export const STAGES = {
+const STAGES = {
   main: { id: "main", label: "MAIN STAGE", short: "MAIN" },
   "escenario-2": { id: "escenario-2", label: "ESCENARIO 2", short: "ESC 2" },
 } as const;

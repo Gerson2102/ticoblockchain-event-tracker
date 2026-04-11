@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import {
   getSponsorsByTier,
   TIER_LABELS,
@@ -11,93 +12,131 @@ import {
 export const metadata: Metadata = {
   title: "Sponsors",
   description:
-    "Patrocinadores oficiales de TicoBlockchain 2026 — Diamante, Platino, Oro y Plata.",
+    "Patrocinadores oficiales de TicoBlockchain 2026 — Diamante, Oro, Plata, Startup, Comunidad y Aliados.",
 };
 
-// Per-tier visual treatment. Diamante is the flagship; each subsequent tier
-// steps down in size, opacity, and fill weight. Defined once at module scope
-// rather than rebuilt on every render.
-type TierStyles = {
-  wrapper: string;
-  indexClasses: string;
-  labelClasses: string;
-  gridClasses: string;
-  tileClasses: string;
-  imgClasses: string;
+// Animation timing — every tier block fades up STAGGER_TIER_MS later than
+// the previous one so the eye follows the cascade top-to-bottom. Per-logo
+// offsets inside each tier are tuned at the tile component (Diamante uses a
+// longer per-logo gap because it has fewer, larger tiles).
+const STAGGER_TIER_MS = 80;
+
+// Per-tier visual treatment. Diamante is the flagship and gets a clean white
+// tile with a heavy primary border. The other five tiers share the white
+// border-tile treatment used in Stitch's "Patrocinadores Premium" mock —
+// only the digit weight, label opacity, and tile size shift as the tier
+// descends. Logos always render in their real brand colors; hover lifts the
+// tile and snaps the border to primary.
+type TierStyle = {
+  digit: string;
+  label: string;
+  caption: string;
+  separator: string;
+  containerSpacing: string;
+  // Tile sizing for non-Diamante tiers; Diamante uses the bespoke
+  // DiamanteTile component below and ignores these.
+  tileHeight: string;
+  tilePadding: string;
+  tileBorder: string;
+  gridCols: string;
 };
 
-const TIER_CONFIG: Record<SponsorTier, TierStyles> = {
+const TIER_STYLES: Record<SponsorTier, TierStyle> = {
   diamante: {
-    wrapper: "mb-24 flex flex-col sm:flex-row border-t-4 border-primary pt-8",
-    indexClasses:
-      "text-6xl sm:text-8xl md:text-9xl font-display font-black text-primary leading-none",
-    labelClasses:
-      "font-display font-bold text-2xl uppercase tracking-widest text-secondary mt-2",
-    gridClasses: "sm:w-3/4 flex flex-wrap gap-4",
-    tileClasses:
-      "w-full md:flex-1 h-48 sm:h-56 md:h-64 bg-primary flex items-center justify-center p-12 group transition-all duration-300",
-    imgClasses:
-      "grayscale invert opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all w-full h-full object-contain",
-  },
-  platino: {
-    wrapper:
-      "mb-24 flex flex-col sm:flex-row border-t-4 border-primary-container pt-8",
-    indexClasses:
-      "text-6xl sm:text-8xl md:text-9xl font-display font-black text-primary-container leading-none",
-    labelClasses:
-      "font-display font-bold text-2xl uppercase tracking-widest text-primary-container mt-2",
-    gridClasses:
-      "sm:w-3/4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4",
-    tileClasses:
-      "h-40 sm:h-48 md:h-56 bg-primary-container flex items-center justify-center p-10 group transition-all duration-300",
-    imgClasses:
-      "grayscale invert opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all w-full h-full object-contain",
+    digit: "text-8xl md:text-9xl text-primary",
+    label: "text-3xl md:text-4xl text-primary",
+    caption: "text-secondary font-bold",
+    separator: "",
+    containerSpacing: "mb-24 md:mb-32",
+    tileHeight: "",
+    tilePadding: "",
+    tileBorder: "",
+    gridCols: "grid-cols-1",
   },
   oro: {
-    wrapper:
-      "mb-24 flex flex-col sm:flex-row border-t-2 border-outline-variant pt-8",
-    indexClasses:
-      "text-5xl sm:text-7xl md:text-8xl font-display font-black text-primary/40 leading-none",
-    labelClasses:
-      "font-display font-bold text-xl uppercase tracking-widest text-primary mt-2",
-    gridClasses:
-      "sm:w-3/4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4",
-    tileClasses:
-      "h-32 sm:h-36 md:h-40 border-2 border-primary flex items-center justify-center p-8 bg-surface-container-low grayscale hover:grayscale-0 transition-all",
-    imgClasses: "max-h-full object-contain",
+    digit: "text-6xl md:text-7xl text-primary/50",
+    label: "text-2xl md:text-3xl text-primary",
+    caption: "text-primary/60",
+    separator: "border-b-2 border-primary pb-4",
+    containerSpacing: "mb-24 md:mb-32",
+    tileHeight: "h-48 md:h-52",
+    tilePadding: "p-10",
+    tileBorder: "border-2 border-primary/20 hover:border-primary",
+    gridCols: "grid-cols-1 sm:grid-cols-2",
   },
   plata: {
-    wrapper: "flex flex-col sm:flex-row border-t-2 border-outline-variant pt-8",
-    indexClasses:
-      "text-4xl sm:text-6xl md:text-7xl font-display font-black text-primary/20 leading-none",
-    labelClasses:
-      "font-display font-bold text-lg uppercase tracking-widest text-primary/60 mt-2",
-    gridClasses:
-      "sm:w-3/4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4",
-    tileClasses:
-      "h-24 sm:h-28 md:h-32 bg-surface-container-lowest border border-outline-variant flex items-center justify-center p-6 opacity-60 hover:opacity-100 transition-opacity",
-    imgClasses: "max-h-full object-contain",
+    digit: "text-5xl md:text-6xl text-primary/40",
+    label: "text-2xl md:text-3xl text-primary/80",
+    caption: "text-primary/50",
+    separator: "border-b-2 border-primary/40 pb-4",
+    containerSpacing: "mb-24 md:mb-32",
+    tileHeight: "h-44 md:h-48",
+    tilePadding: "p-10",
+    tileBorder: "border-2 border-primary/20 hover:border-primary",
+    gridCols: "grid-cols-1 sm:grid-cols-2",
+  },
+  startup: {
+    digit: "text-5xl md:text-6xl text-primary/30",
+    label: "text-xl md:text-2xl text-primary/70",
+    caption: "text-primary/40",
+    separator: "border-b border-primary/30 pb-4",
+    containerSpacing: "mb-20 md:mb-24",
+    tileHeight: "h-40 md:h-44",
+    tilePadding: "p-8",
+    tileBorder: "border border-primary/15 hover:border-primary",
+    gridCols: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+  },
+  comunidad: {
+    digit: "text-4xl md:text-5xl text-primary/25",
+    label: "text-xl md:text-2xl text-primary/60",
+    caption: "text-primary/35",
+    separator: "border-b border-primary/20 pb-4",
+    containerSpacing: "mb-20 md:mb-24",
+    tileHeight: "h-40 md:h-44",
+    tilePadding: "p-8",
+    tileBorder: "border border-primary/15 hover:border-primary",
+    gridCols: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+  },
+  aliados: {
+    digit: "text-4xl md:text-5xl text-primary/20",
+    label: "text-xl md:text-2xl text-primary/50",
+    caption: "text-primary/30",
+    separator: "border-b border-primary/15 pb-4",
+    containerSpacing: "",
+    tileHeight: "h-40 md:h-44",
+    tilePadding: "p-8",
+    tileBorder: "border border-primary/15 hover:border-primary",
+    gridCols: "grid-cols-1 sm:grid-cols-2",
   },
 };
 
 export default function SponsorsPage() {
   return (
-    <main id="main" className="pb-20">
-      <section className="px-4 sm:px-6 md:px-12 bg-white py-24">
-        <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black uppercase tracking-tighter text-primary mb-10 sm:mb-16 md:mb-20 animate-reveal-up">
-          SPONSORS
-        </h1>
+    <main id="main">
+      <section className="bg-white px-4 sm:px-6 md:px-12 pt-8 md:pt-12 pb-24 md:pb-32">
+        {/* ── Section heading ───────────────────────────────────────────── */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 gap-6">
+          <h1 className="text-6xl md:text-8xl font-display font-black uppercase tracking-tighter text-primary leading-none animate-reveal-up">
+            Sponsors
+          </h1>
+          <div
+            className="font-mono text-sm uppercase tracking-widest text-secondary border-l-4 border-secondary pl-4 animate-fade-up"
+            style={{ "--delay": "200ms" } as CSSProperties}
+          >
+            Socios Estratégicos 2026
+          </div>
+        </div>
 
+        {/* ── 6 tier blocks ─────────────────────────────────────────────── */}
         {TIER_ORDER.map((tier, tierIndex) => {
           const sponsors = getSponsorsByTier(tier);
           if (sponsors.length === 0) return null;
-          const stagger = `stagger-${Math.min(tierIndex * 2 + 1, 7)}`;
           return (
             <TierBlock
               key={tier}
               tier={tier}
               sponsors={sponsors}
-              staggerClass={stagger}
+              tierIndex={tierIndex}
             />
           );
         })}
@@ -106,36 +145,147 @@ export default function SponsorsPage() {
   );
 }
 
+/* ─── Tier block ───────────────────────────────────────────────────────── */
+
 type TierBlockProps = {
   tier: SponsorTier;
   sponsors: Sponsor[];
-  staggerClass: string;
+  tierIndex: number;
 };
 
-function TierBlock({ tier, sponsors, staggerClass }: TierBlockProps) {
-  const { index, label } = TIER_LABELS[tier];
-  const styles = TIER_CONFIG[tier];
+function TierBlock({ tier, sponsors, tierIndex }: TierBlockProps) {
+  const styles = TIER_STYLES[tier];
+  const meta = TIER_LABELS[tier];
+  const isDiamante = tier === "diamante";
 
   return (
-    <div className={`${styles.wrapper} animate-fade-up ${staggerClass}`}>
-      <div className="sm:w-1/4 mb-6 sm:mb-0">
-        <div className={styles.indexClasses}>{index}</div>
-        <div className={styles.labelClasses}>{label}</div>
-      </div>
-      <div className={styles.gridClasses}>
-        {sponsors.map((sponsor) => (
-          <div key={sponsor.id} className={styles.tileClasses}>
-            <Image
-              src={sponsor.logoUrl}
-              alt={sponsor.name}
-              width={400}
-              height={200}
-              sizes="(min-width: 768px) 25vw, (min-width: 640px) 50vw, 100vw"
-              className={styles.imgClasses}
-            />
-            <span className="sr-only">{sponsor.name}</span>
+    <div className={styles.containerSpacing}>
+      {/* Header: digit + label + caption */}
+      <div
+        className={`flex items-baseline gap-6 mb-8 ${styles.separator} animate-fade-up`}
+        style={{ "--delay": `${tierIndex * STAGGER_TIER_MS}ms` } as CSSProperties}
+      >
+        <div
+          className={`font-display font-black leading-none ${styles.digit}`}
+        >
+          {meta.index}
+        </div>
+        <div>
+          <div
+            className={`font-display font-black uppercase tracking-tighter ${styles.label}`}
+          >
+            {meta.label}
           </div>
-        ))}
+          <div
+            className={`font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] ${styles.caption}`}
+          >
+            {meta.caption}
+          </div>
+        </div>
+      </div>
+
+      {/* Logo grid */}
+      <div className={`grid gap-4 md:gap-6 ${styles.gridCols}`}>
+        {sponsors.map((sponsor, i) =>
+          isDiamante ? (
+            <DiamanteTile
+              key={sponsor.id}
+              sponsor={sponsor}
+              index={i}
+              tierIndex={tierIndex}
+            />
+          ) : (
+            <StandardTile
+              key={sponsor.id}
+              sponsor={sponsor}
+              index={i}
+              tierIndex={tierIndex}
+              heightClass={styles.tileHeight}
+              paddingClass={styles.tilePadding}
+              borderClass={styles.tileBorder}
+            />
+          ),
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Tile sub-components ──────────────────────────────────────────────── */
+
+// The flagship: a clean white tile with a thick primary border. The premium
+// feel comes from border weight, not from a dark frame. A small mono "Global
+// Tier" badge in the top-left adds an editorial detail without competing with
+// the logo. Visa renders in its real brand blue.
+function DiamanteTile({
+  sponsor,
+  index,
+  tierIndex,
+}: {
+  sponsor: Sponsor;
+  index: number;
+  tierIndex: number;
+}) {
+  return (
+    <div
+      className="relative bg-white border-4 border-primary p-10 md:p-14 group transition-all duration-300 hover:-translate-y-1 animate-fade-up"
+      style={{ "--delay": `${tierIndex * STAGGER_TIER_MS + index * 120 + 100}ms` } as CSSProperties}
+    >
+      <div className="absolute top-4 left-4 z-10 font-mono text-[10px] text-primary/40 uppercase tracking-widest">
+        Global Tier
+      </div>
+
+      <div className="flex items-center justify-center pt-4">
+        <div className="relative w-full max-w-[360px] h-20 md:h-28 lg:h-32">
+          <Image
+            src={sponsor.logoUrl}
+            alt={sponsor.name}
+            fill
+            priority
+            sizes="(min-width: 1024px) 50vw, 90vw"
+            className="object-contain transition-transform duration-300 group-hover:scale-105"
+            unoptimized
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// All non-Diamante tiers share this tile. Logos always render in real brand
+// colors. Hover snaps the border to primary, lifts the tile, and scales the
+// logo — no grayscale-to-color stunt.
+function StandardTile({
+  sponsor,
+  index,
+  tierIndex,
+  heightClass,
+  paddingClass,
+  borderClass,
+}: {
+  sponsor: Sponsor;
+  index: number;
+  tierIndex: number;
+  heightClass: string;
+  paddingClass: string;
+  borderClass: string;
+}) {
+  return (
+    <div
+      className={`bg-white ${borderClass} ${heightClass} ${paddingClass} flex items-center justify-center group transition-all duration-300 hover:-translate-y-1 animate-fade-up`}
+      style={{
+        "--delay": `${tierIndex * STAGGER_TIER_MS + index * 90 + 150}ms`,
+      } as CSSProperties}
+    >
+      <div className="relative w-full h-full max-w-[220px]">
+        <Image
+          src={sponsor.logoUrl}
+          alt={sponsor.name}
+          fill
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 40vw, 80vw"
+          className="object-contain transition-transform duration-300 group-hover:scale-105"
+          unoptimized
+        />
       </div>
     </div>
   );

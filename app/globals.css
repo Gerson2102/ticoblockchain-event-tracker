@@ -237,6 +237,12 @@
 body {
   background: var(--color-surface);
   color: var(--color-on-surface);
+  /* Disable browser-synthesized bold/italic. Space Grotesk's variable font
+     only ships up to weight 700; without this rule, `font-black` (900) gets
+     faked by the browser, and the synthetic strokes overshoot the glyph
+     advance width — which then collides with `tracking-tighter` and the
+     reveal-up clip-path on big editorial headings. */
+  font-synthesis: none;
 }
 
 /* Zero-curvature enforcement for all interactive elements */
@@ -359,11 +365,14 @@ textarea:focus-visible,
 }
 
 @keyframes reveal-up {
+  /* Horizontal slack of -0.15em prevents the bold ink of the leftmost and
+     rightmost letters from being clipped at huge sizes with `tracking-tighter`
+     (Space Grotesk Black overflows its glyph box on letters like A, S, R). */
   from {
-    clip-path: inset(100% 0 0 0);
+    clip-path: inset(100% -0.15em 0 -0.15em);
   }
   to {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(0 -0.15em 0 -0.15em);
   }
 }
 
