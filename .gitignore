@@ -41,3 +41,8 @@ yarn-error.log*
 next-env.d.ts
 # documentation
 /docs
+
+# claude code — per-session runtime state is ephemeral and machine-local.
+# Only a shared `settings.json` (if we ever add one) should be tracked.
+.claude/*
+!.claude/settings.json
