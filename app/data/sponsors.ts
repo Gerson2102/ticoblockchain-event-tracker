@@ -1,7 +1,14 @@
 // Sponsors directory for TicoBlockchain 2026. Tier order drives the
-// sponsors page render order (highest → lowest).
+// sponsors page render order (highest → lowest). Logo URLs are sourced
+// from the official ticoblockchain.cr Webflow CDN.
 
-export type SponsorTier = "diamante" | "platino" | "oro" | "plata";
+export type SponsorTier =
+  | "diamante"
+  | "oro"
+  | "plata"
+  | "startup"
+  | "comunidad"
+  | "aliados";
 
 export type Sponsor = {
   id: string;
@@ -12,27 +19,29 @@ export type Sponsor = {
 
 export const TIER_ORDER: readonly SponsorTier[] = [
   "diamante",
-  "platino",
   "oro",
   "plata",
+  "startup",
+  "comunidad",
+  "aliados",
 ] as const;
 
+// Editorial captions describe the *kind of money* a tier represents.
+// They sit beneath the tier label in the hero blocks and frame each tier's
+// role at the event without quoting actual sponsorship amounts.
 export const TIER_LABELS: Record<
   SponsorTier,
-  { index: string; label: string }
+  { index: string; label: string; caption: string }
 > = {
-  diamante: { index: "01", label: "Diamante" },
-  platino: { index: "02", label: "Platino" },
-  oro: { index: "03", label: "Oro" },
-  plata: { index: "04", label: "Plata" },
+  diamante: { index: "01", label: "Diamante", caption: "Main Partners" },
+  oro: { index: "02", label: "Oro", caption: "Strategic Partners" },
+  plata: { index: "03", label: "Plata", caption: "Premium Partners" },
+  startup: { index: "04", label: "Startup", caption: "Innovation Partners" },
+  comunidad: { index: "05", label: "Comunidad", caption: "Community Partners" },
+  aliados: { index: "06", label: "Aliados", caption: "Institutional Partners" },
 };
 
-// Logo URLs are placeholders — real assets pending from the sponsorship team.
-// Names taken from the 24 MAYO 2026 agenda reference.
-const PLACEHOLDER_LOGO_DARK =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuDkJZ9VaDx_KIhnMN_Le5xXFoZ_UAJhuBD0YeC0acR4QzpbO6Pfj2R3zq68I_rqv8D2fFC6e99bJw3hx0WGoY_BssqEyZI-R2FMRTkmJNlbbjgX9mEX9yyF2w_CehoFdDzAXEpZGOSXRNijvw8EtC26FwqhF5h_im7dsX75rPaA0F0K9_lPfFWT9DxqQ1F8KywylYZ3pnfUg-gblob1EPetsl2ZRXOaC-WgkHbhC9L5j-chOWv4KVuwhx_qpUkJ9-eiwbuJPArrsM4";
-const PLACEHOLDER_LOGO_LIGHT =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuC3ABrE9VRAZkqWSHsHJUJR1YYJn3eb5T6K9dHI4MvGzRJKdR9NNiAzzUedYZs2-Ckzy2_0xE4LNGn5K7p9oikJTufuiIRHFpoQClCrxNI-Zg3bVDhJJRchoFBVf-1YwHG9X0W1zhKDNvMgmuYODD6xvAn5PS1VqacihlzjcZD_BeHvwcgocOkMW-hrRvtdHt-3ufjfIVhPpYG2eaCuDovzdHhWNONXY57HOcKmnoJjDb2ekVfyN-tLIIbq1p0RINkv4oT0XkjpVi4";
+const CDN = "https://cdn.prod.website-files.com/6744c862a5d9324c919d6b4d";
 
 export const SPONSORS: readonly Sponsor[] = [
   // Diamante
@@ -40,73 +49,89 @@ export const SPONSORS: readonly Sponsor[] = [
     id: "visa",
     name: "Visa",
     tier: "diamante",
-    logoUrl: PLACEHOLDER_LOGO_DARK,
-  },
-
-  // Platino
-  {
-    id: "wink",
-    name: "Wink",
-    tier: "platino",
-    logoUrl: PLACEHOLDER_LOGO_DARK,
-  },
-  {
-    id: "nimiq",
-    name: "Nimiq",
-    tier: "platino",
-    logoUrl: PLACEHOLDER_LOGO_DARK,
-  },
-  {
-    id: "olanzo",
-    name: "Olanzo",
-    tier: "platino",
-    logoUrl: PLACEHOLDER_LOGO_DARK,
-  },
-  {
-    id: "bn-fondos",
-    name: "BN Fondos",
-    tier: "platino",
-    logoUrl: PLACEHOLDER_LOGO_DARK,
+    logoUrl: `${CDN}/67472b3f2c4db80f6212e02a_visa.svg`,
   },
 
   // Oro
   {
-    id: "itec",
-    name: "Itec",
+    id: "wink",
+    name: "Wink (con respaldo de Coopenae)",
     tier: "oro",
-    logoUrl: PLACEHOLDER_LOGO_LIGHT,
+    logoUrl: `${CDN}/6761ae70ab15b4ac09e07fdd_Wink%20con%20respaldo%20de%20Coopenae%20logo%202023%20color.png`,
   },
   {
-    id: "lulubit",
-    name: "Lulubit",
+    id: "nimiq",
+    name: "Nimiq",
     tier: "oro",
-    logoUrl: PLACEHOLDER_LOGO_LIGHT,
-  },
-  {
-    id: "teladoke",
-    name: "Teladoke",
-    tier: "oro",
-    logoUrl: PLACEHOLDER_LOGO_LIGHT,
+    logoUrl: `${CDN}/69ac3b667ecc54f87f16d28e_nimiq_logo_cmyk_horizontal.jpg`,
   },
 
   // Plata
   {
+    id: "lulubit",
+    name: "Lulubit (EBI)",
+    tier: "plata",
+    logoUrl: `${CDN}/69655c7e03af5324e759fc41_EBI_Lulubit_B1.png`,
+  },
+  {
+    id: "iitos",
+    name: "iiTOS",
+    tier: "plata",
+    logoUrl: `${CDN}/67471865139af06249c86686_iiTOS_Icons%2002A-29.png`,
+  },
+
+  // Startup
+  {
+    id: "world",
+    name: "World",
+    tier: "startup",
+    logoUrl: `${CDN}/69ac3d4e630297bd10d2c85e_%5BWorld%5D%20Logo-black%202.png`,
+  },
+  {
     id: "onvo",
-    name: "Onvo",
-    tier: "plata",
-    logoUrl: PLACEHOLDER_LOGO_LIGHT,
+    name: "ONVO",
+    tier: "startup",
+    logoUrl: `${CDN}/69ac3cef1f9143b6cf3cc109_LOGO%20ONVO.png`,
   },
   {
-    id: "tilo",
-    name: "Tilo",
-    tier: "plata",
-    logoUrl: PLACEHOLDER_LOGO_LIGHT,
+    id: "cofiblocks",
+    name: "Cofiblocks",
+    tier: "startup",
+    logoUrl: `${CDN}/69ac3db62afbcb6cf7c82a39_Cofiblocks_Logo_s_borda.png`,
+  },
+
+  // Comunidad
+  {
+    id: "ethereum-cr",
+    name: "Ethereum Costa Rica",
+    tier: "comunidad",
+    logoUrl: `${CDN}/67c8a3c0986bc3212e55d24b_Vector.png`,
   },
   {
-    id: "blockchain-guard-labs",
-    name: "Blockchain Guard Labs",
-    tier: "plata",
-    logoUrl: PLACEHOLDER_LOGO_LIGHT,
+    id: "refi-cr",
+    name: "ReFi Costa Rica",
+    tier: "comunidad",
+    logoUrl: `${CDN}/67c8a3d76914a3755a1b51db_reficr-transparente-fondo-claro.png`,
+  },
+  {
+    id: "techebe",
+    name: "TechEbe",
+    tier: "comunidad",
+    logoUrl: `${CDN}/69c54b85be71460db9cd81c9_Black%20Oranye%20Archetype%20Inspired%20Logo%20(1).png`,
+  },
+
+  // Aliados
+  {
+    id: "lnet",
+    name: "LNet",
+    tier: "aliados",
+    logoUrl: `${CDN}/69ac3f68a3d0a89362e42e04_lnet.png`,
+  },
+  {
+    id: "hallos",
+    name: "Hallos",
+    tier: "aliados",
+    logoUrl: `${CDN}/67a75b3f8007474127fe7156_Hallos.svg`,
   },
 ] as const;
 
