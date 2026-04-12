@@ -1,26 +1,25 @@
 import Image from "next/image";
 import DepartureRow from "./components/DepartureRow";
 import Icon from "./components/Icon";
+import LiveDot from "./components/LiveDot";
 import SessionCard from "./components/SessionCard";
 import { HERO_CONTENT, BENTO_HIGHLIGHTS } from "./data/home-content";
-import { SESSIONS, getLiveSessions, getNextSessions } from "./data/sessions";
+import {
+  getLiveSessions,
+  getNextSessions,
+  getSessionsAt,
+} from "./data/sessions";
 import type { Session } from "./data/types";
 import { VENUE } from "./data/venue";
+
+// Revalidate every 60 seconds so time-derived session status (live/next/past)
+// updates during the event without a redeploy.
+export const revalidate = 60;
 
 // Sorted once per render pass — cheap for ~21 sessions.
 function sortByStartTime(sessions: readonly Session[]): Session[] {
   return [...sessions].sort((a, b) => a.startTime.localeCompare(b.startTime));
 }
-
-const STAGGER_CLASSES = [
-  "stagger-1",
-  "stagger-2",
-  "stagger-3",
-  "stagger-4",
-  "stagger-5",
-  "stagger-6",
-  "stagger-7",
-];
 
 function splitSpeakerName(name: string | undefined): {
   first: string;
@@ -48,15 +47,16 @@ function heroHeadline(session: Session | undefined): {
 }
 
 export default function EnVivoPage() {
-  const live = getLiveSessions();
+  const now = new Date();
+  const live = getLiveSessions(now);
   const mainLive = live.main;
   const parallelLive = live.escenario2;
 
-  const sidebarSessions = getNextSessions(3);
+  const sidebarSessions = getNextSessions(3, now);
 
   // Agenda preview anchors to the Main Stage live row. Slice ±1 around it
   // for visual continuity; fall back to the first 5 rows if nothing is live.
-  const sortedSessions = sortByStartTime(SESSIONS);
+  const sortedSessions = sortByStartTime(getSessionsAt(now));
   const anchorIdx = mainLive
     ? sortedSessions.findIndex((s) => s.id === mainLive.id)
     : -1;
@@ -75,10 +75,7 @@ export default function EnVivoPage() {
         <div className="lg:col-span-9 relative flex flex-col justify-between p-5 sm:p-8 md:p-12 text-on-primary">
           {/* Live Indicator */}
           <div className="flex items-center gap-3 animate-fade-up">
-            <span className="flex h-3 w-3 relative">
-              <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-secondary opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-secondary animate-live-glow" />
-            </span>
+            <LiveDot />
             <span className="mono-data text-sm font-bold tracking-widest uppercase">
               {HERO_CONTENT.liveLabel}
             </span>
@@ -154,14 +151,14 @@ export default function EnVivoPage() {
                 key={session.id}
                 session={session}
                 variant="light"
-                staggerClass={STAGGER_CLASSES[i + 2]}
+                staggerClass={`stagger-${Math.min(i + 3, 7)}`}
               />
             ))}
             {sidebarSessions[2] && (
               <SessionCard
                 session={sidebarSessions[2]}
                 variant="dark"
-                staggerClass={STAGGER_CLASSES[4]}
+                staggerClass="stagger-5"
               />
             )}
           </div>
@@ -187,10 +184,7 @@ export default function EnVivoPage() {
         <section className="bg-surface-container-high px-5 sm:px-8 md:px-12 lg:px-24 py-10 border-t border-primary/10 border-b-4 border-b-secondary animate-fade-up">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <span className="flex h-3 w-3 relative">
-                <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-secondary opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-secondary animate-live-glow" />
-              </span>
+              <LiveDot />
               <span className="mono-data text-[11px] font-bold tracking-widest uppercase text-secondary">
                 {HERO_CONTENT.parallelLabel}
               </span>
@@ -242,7 +236,7 @@ export default function EnVivoPage() {
             <DepartureRow
               key={session.id}
               session={session}
-              staggerClass={STAGGER_CLASSES[i + 2]}
+              staggerClass={`stagger-${Math.min(i + 3, 7)}`}
             />
           ))}
         </div>
@@ -293,7 +287,7 @@ type BentoCellProps = {
 };
 
 function BentoCell({ item, index }: BentoCellProps) {
-  const stagger = STAGGER_CLASSES[index] ?? "";
+  const stagger = `stagger-${Math.min(index + 1, 7)}`;
 
   if (item.kind === "recap") {
     return (

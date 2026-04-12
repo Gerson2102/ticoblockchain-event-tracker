@@ -13,7 +13,7 @@ function categoryAccent(category: SessionCategory): string {
   switch (category) {
     case "keynote":
       return "border-secondary";
-    case "main-stage":
+    case "sponsor-slot":
       return "border-primary-container";
     case "panel":
     case "pitch":

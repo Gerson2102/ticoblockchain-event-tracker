@@ -9,7 +9,7 @@ export type Stage = "main" | "escenario-2" | "both";
 
 export type SessionCategory =
   | "keynote"
-  | "main-stage" // sponsor-paid Main Stage slot (Diamond / Platino)
+  | "sponsor-slot" // sponsor-paid showcase slot
   | "workshop" // Gold tier
   | "panel" // Silver tier
   | "pitch" // Startup Pitch Session
@@ -38,6 +38,9 @@ export type Speaker = {
   stage: Exclude<Stage, "both">;
   status: SessionStatus;
   imageUrl: string;
+  // Render the portrait in grayscale until hovered. Used when an official
+  // portrait is stylistically mismatched and would break the editorial tone.
+  monochrome?: boolean;
 };
 
 export type BentoHighlight = {

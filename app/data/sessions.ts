@@ -1,4 +1,5 @@
-import type { Session } from "./types";
+import type { Session, SessionStatus } from "./types";
+import { VENUE } from "./venue";
 
 // Real TicoBlockchain 2026 agenda — 24 MAYO 2026.
 // Two parallel tracks: Main Stage + Escenario 2.
@@ -50,7 +51,7 @@ export const SESSIONS: readonly Session[] = [
     description:
       "Un recorrido sin filtros por los retos reales de llevar servicios financieros a los no bancarizados, desde la óptica de un neobanco costarricense.",
     stage: "main",
-    category: "main-stage",
+    category: "sponsor-slot",
     status: "live",
   },
   {
@@ -62,7 +63,7 @@ export const SESSIONS: readonly Session[] = [
     description:
       "Presentación patrocinada — infraestructura para pagos y liquidación on-chain.",
     stage: "escenario-2",
-    category: "main-stage",
+    category: "sponsor-slot",
     status: "live",
   },
   {
@@ -87,7 +88,7 @@ export const SESSIONS: readonly Session[] = [
     description:
       "Presentación patrocinada — pagos peer-to-peer directos en navegador sin intermediarios.",
     stage: "escenario-2",
-    category: "main-stage",
+    category: "sponsor-slot",
     status: "next",
   },
   {
@@ -257,17 +258,28 @@ export const SESSIONS: readonly Session[] = [
   },
 ] as const;
 
+// Returns sessions with each `status` replaced by a time-derived status.
+// Pre/post event day, the literal "demo" status is preserved so the site
+// can be previewed with the intended "live" hero pre-launch.
+export function getSessionsAt(now: Date): Session[] {
+  const statuses = computeSessionStatuses(SESSIONS, now);
+  return SESSIONS.map((s) => ({
+    ...s,
+    status: statuses.get(s.id) ?? s.status,
+  }));
+}
+
 // Returns the current live session per physical stage. A "both"-stage
 // session (ceremony/break) is mirrored onto both keys so the home hero
 // never shows an empty state during Registro / Apertura / Cierre / Coctel.
-export function getLiveSessions(): {
+export function getLiveSessions(now: Date): {
   main?: Session;
   escenario2?: Session;
 } {
   let main: Session | undefined;
   let escenario2: Session | undefined;
 
-  for (const s of SESSIONS) {
+  for (const s of getSessionsAt(now)) {
     if (s.status !== "live") continue;
     if (s.stage === "both") {
       main = main ?? s;
@@ -283,9 +295,90 @@ export function getLiveSessions(): {
 }
 
 // Next upcoming sessions across both tracks, sorted chronologically.
-export function getNextSessions(count: number): Session[] {
-  return [...SESSIONS]
+export function getNextSessions(count: number, now: Date): Session[] {
+  return getSessionsAt(now)
     .filter((s) => s.status === "next" || s.status === "scheduled")
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
     .slice(0, count);
+}
+
+// ─── Time-derived status helpers ──────────────────────────────────────────
+
+// Parses "09:10 — 09:55" into { start: "09:10", end: "09:55" }.
+// Returns null for formats we can't read (e.g. "Por anunciar").
+function parseTimeRange(time: string): { start: string; end: string } | null {
+  const match = time.match(/^(\d{2}:\d{2})\s*[—–-]\s*(\d{2}:\d{2})$/);
+  if (!match) return null;
+  return { start: match[1], end: match[2] };
+}
+
+// Projects `now` into the event's local timezone and returns the date and
+// time as plain strings. Using formatToParts keeps comparisons timezone-safe
+// regardless of the server's system zone.
+function getEventLocalDateTime(now: Date): {
+  dateISO: string;
+  hhmm: string;
+} {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: VENUE.timezoneName,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+  const get = (type: string) =>
+    parts.find((p) => p.type === type)?.value ?? "";
+  return {
+    dateISO: `${get("year")}-${get("month")}-${get("day")}`,
+    hhmm: `${get("hour")}:${get("minute")}`,
+  };
+}
+
+// Derives each session's status from the wall clock in the event timezone.
+// On pre/post event days, falls back to the literal demo status. On event
+// day, computes past/live/scheduled from session start/end, then promotes
+// the earliest "scheduled" per stage to "next".
+export function computeSessionStatuses(
+  sessions: readonly Session[],
+  now: Date,
+): Map<string, SessionStatus> {
+  const result = new Map<string, SessionStatus>();
+  const nowLocal = getEventLocalDateTime(now);
+
+  if (nowLocal.dateISO !== VENUE.eventDateISO) {
+    for (const s of sessions) result.set(s.id, s.status);
+    return result;
+  }
+
+  for (const s of sessions) {
+    const range = parseTimeRange(s.time);
+    if (!range) {
+      result.set(s.id, s.status);
+      continue;
+    }
+    if (nowLocal.hhmm >= range.end) {
+      result.set(s.id, "past");
+    } else if (nowLocal.hhmm >= range.start) {
+      result.set(s.id, "live");
+    } else {
+      result.set(s.id, "scheduled");
+    }
+  }
+
+  // Promote earliest "scheduled" per physical stage to "next".
+  const stages = ["main", "escenario-2"] as const;
+  for (const stage of stages) {
+    const firstScheduled = [...sessions]
+      .filter(
+        (s) =>
+          result.get(s.id) === "scheduled" &&
+          (s.stage === stage || s.stage === "both"),
+      )
+      .sort((a, b) => a.startTime.localeCompare(b.startTime))[0];
+    if (firstScheduled) result.set(firstScheduled.id, "next");
+  }
+
+  return result;
 }

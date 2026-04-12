@@ -33,11 +33,11 @@ type TierStyle = {
   caption: string;
   separator: string;
   containerSpacing: string;
-  // Tile sizing for non-Diamante tiers; Diamante uses the bespoke
-  // DiamanteTile component below and ignores these.
-  tileHeight: string;
-  tilePadding: string;
-  tileBorder: string;
+  // Tile sizing for non-Diamante tiers. Diamante uses the bespoke
+  // DiamanteTile component below and leaves these unset.
+  tileHeight?: string;
+  tilePadding?: string;
+  tileBorder?: string;
   gridCols: string;
 };
 
@@ -48,9 +48,6 @@ const TIER_STYLES: Record<SponsorTier, TierStyle> = {
     caption: "text-secondary font-bold",
     separator: "",
     containerSpacing: "mb-24 md:mb-32",
-    tileHeight: "",
-    tilePadding: "",
-    tileBorder: "",
     gridCols: "grid-cols-1",
   },
   oro: {
@@ -200,9 +197,9 @@ function TierBlock({ tier, sponsors, tierIndex }: TierBlockProps) {
               sponsor={sponsor}
               index={i}
               tierIndex={tierIndex}
-              heightClass={styles.tileHeight}
-              paddingClass={styles.tilePadding}
-              borderClass={styles.tileBorder}
+              heightClass={styles.tileHeight ?? ""}
+              paddingClass={styles.tilePadding ?? ""}
+              borderClass={styles.tileBorder ?? ""}
             />
           ),
         )}

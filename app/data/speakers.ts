@@ -116,6 +116,7 @@ export const SPEAKERS: readonly Speaker[] = [
     stage: "main",
     status: "scheduled",
     imageUrl: IMG_RANDALL_BARQUERO,
+    monochrome: true,
   },
   {
     id: "roberto-grella",

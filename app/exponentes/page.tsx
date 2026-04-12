@@ -64,7 +64,7 @@ export default function ExponentesPage() {
               <div className="col-span-12 md:col-span-5 flex items-center gap-4 sm:gap-6">
                 <div
                   className={`w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 flex-shrink-0 transition-all duration-500 relative overflow-hidden rounded-full ring-2 ring-primary/10 group-hover:ring-secondary ${
-                    speaker.id === "randall-barquero"
+                    speaker.monochrome
                       ? "grayscale group-hover:grayscale-0"
                       : ""
                   }`}

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Icon from "../components/Icon";
 import TimelineRow from "../components/TimelineRow";
-import { SESSIONS } from "../data/sessions";
+import { getSessionsAt } from "../data/sessions";
 import type { Stage } from "../data/types";
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export default async function AgendaPage({
   const params = await searchParams;
   const activeFilter = normalizeFilter(params.stage);
 
-  const sortedSessions = [...SESSIONS].sort((a, b) =>
+  const sortedSessions = getSessionsAt(new Date()).sort((a, b) =>
     a.startTime.localeCompare(b.startTime),
   );
   const filteredSessions = sortedSessions.filter((s) =>
@@ -141,7 +141,7 @@ export default async function AgendaPage({
       <aside className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
         <div className="relative bg-primary-container p-8 text-on-primary min-h-[200px] sm:min-h-[300px] flex flex-col justify-end overflow-hidden">
           <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9Tmh4SB2EcX86Qgc6vqq441-Kusu1Uw6fHWGTN9RSWCh4_XXrBK-eYQNG3M9qS9gt_ik6aqj40Vr7Ke8zKRtJwscdfQpzTSxvxX-05AaesFfVAHiiMFmydT73zKvMqjHyE0yhDWmyYWpyrNUgWf0gIOh_DRCMWbiGLz_ubojXszEudaABlXsOuqq_WLnXIVQP2sS7CAvZgVECWG-OVz03EyHTrii3V6JYdRyYxKE7zB5sq4WpeJ10aXdPE-_rKxtE-SQtAIRTqtk"
+            src="/images/agenda-accent.webp"
             alt="Abstract digital blocks and light trails representing blockchain structure"
             fill
             sizes="(min-width: 768px) 50vw, 100vw"
