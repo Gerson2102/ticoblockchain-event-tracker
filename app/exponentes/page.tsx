@@ -76,6 +76,7 @@ export default function ExponentesPage() {
                     src={speaker.imageUrl}
                     alt={speaker.name}
                     fill
+                    unoptimized={!speaker.imageUrl.startsWith("/")}
                     quality={90}
                     sizes="(min-width: 768px) 128px, (min-width: 640px) 96px, 80px"
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
