@@ -5,10 +5,14 @@ import type { Stage } from "./types";
 
 export const VENUE = {
   name: "Hotel Barceló San José",
+  fullName: "Hotel Barceló San José Palacio",
+  address: "Robledal de La Uruca, San José 1150, Costa Rica",
   eventDate: "14 MAYO 2026",
   eventDateISO: "2026-05-14",
   timezone: "GMT-6",
   timezoneName: "America/Costa_Rica",
+  mapsUrl: "https://www.google.com/maps/place/Barcel%C3%B3+San+Jos%C3%A9/",
+  wazeUrl: "https://www.waze.com/ul?q=Hotel%20Barcel%C3%B3%20San%20Jos%C3%A9",
 } as const;
 
 const STAGES = {

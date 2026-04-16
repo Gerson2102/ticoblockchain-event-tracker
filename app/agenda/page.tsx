@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import DevTimeBanner from "../components/DevTimeBanner";
 import Icon from "../components/Icon";
@@ -154,27 +153,9 @@ export default async function AgendaPage({
         </div>
       </aside>
 
-      {/* Dynamic Visual Accent */}
-      <aside className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
-        <div className="relative bg-primary-container p-8 text-on-primary min-h-[200px] sm:min-h-[300px] flex flex-col justify-end overflow-hidden">
-          <Image
-            src="/images/agenda-accent.webp"
-            alt="Abstract digital blocks and light trails representing blockchain structure"
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover mix-blend-overlay opacity-30"
-          />
-          <div className="relative z-10">
-            <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-black uppercase leading-none mb-4">
-              ¿Te perdiste algo?
-            </h3>
-            <p className="mono-data text-sm uppercase tracking-widest text-on-primary-container">
-              Las grabaciones estarán disponibles para todos los registrados 48h
-              después del cierre.
-            </p>
-          </div>
-        </div>
-        <div className="bg-surface-container-highest p-8 flex flex-col justify-between border-2 border-primary">
+      {/* Venue Info */}
+      <aside className="mt-24">
+        <div className="bg-surface-container-highest p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-2 border-primary">
           <div>
             <h3 className="font-display text-2xl font-bold uppercase mb-4 text-primary">
               Información de Sede
@@ -184,7 +165,7 @@ export default async function AgendaPage({
               centro de la capital.
             </p>
           </div>
-          <div className="mt-8">
+          <div className="shrink-0">
             <Link
               href="/mapa"
               className="inline-flex items-center gap-2 font-display font-bold uppercase border-b-2 border-primary pb-1 hover:text-secondary hover:border-secondary transition-all text-primary"

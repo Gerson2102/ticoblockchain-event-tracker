@@ -109,21 +109,6 @@ export default function ExponentesPage() {
         ))}
       </section>
 
-      {/* CTA Section */}
-      <section className="mt-20 px-4 sm:px-6 animate-fade-up stagger-7">
-        <div className="bg-primary p-6 sm:p-8 md:p-12 text-center">
-          <h2 className="text-2xl sm:text-4xl md:text-6xl font-black text-on-primary uppercase font-display tracking-tighter mb-6">
-            ¿QUIERES SER PARTE DEL PANEL?
-          </h2>
-          <p className="text-on-primary-container max-w-2xl mx-auto mb-10 text-lg">
-            La convocatoria para relámpagos (lightning talks) sigue abierta para
-            desarrolladores locales.
-          </p>
-          <button className="bg-secondary text-on-secondary px-6 py-3 sm:px-10 sm:py-4 font-black uppercase tracking-widest text-sm hover:scale-105 transition-transform duration-200 btn-shine min-h-[48px]">
-            APLICAR AHORA
-          </button>
-        </div>
-      </section>
     </main>
   );
 }

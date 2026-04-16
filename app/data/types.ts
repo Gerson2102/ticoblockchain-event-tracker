@@ -43,14 +43,19 @@ export type Speaker = {
   monochrome?: boolean;
 };
 
-export type BentoHighlight = {
+export type PracticalInfoItem = {
   id: string;
-  kind: "recap" | "stats" | "gallery" | "location";
-  label: string;
-  title?: string;
-  body?: string;
-  statValue?: string;
-  statLabel?: string;
-  imageUrl?: string;
-  imageAlt?: string;
+  icon: import("../components/Icon").IconName;
+  title: string;
+  detail: string;
+};
+
+export type VenueDirections = {
+  name: string;
+  address: string;
+  distances: readonly string[];
+  transport: readonly string[];
+  mapsEmbedUrl: string;
+  mapsUrl: string;
+  wazeUrl: string;
 };

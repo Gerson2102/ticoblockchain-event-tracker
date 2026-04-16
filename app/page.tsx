@@ -5,7 +5,11 @@ import Icon from "./components/Icon";
 import LiveDot from "./components/LiveDot";
 import LiveRefresh from "./components/LiveRefresh";
 import SessionCard from "./components/SessionCard";
-import { HERO_CONTENT, BENTO_HIGHLIGHTS } from "./data/home-content";
+import {
+  HERO_CONTENT,
+  PRACTICAL_INFO,
+  VENUE_DIRECTIONS,
+} from "./data/home-content";
 import { resolveNow } from "./data/now";
 import {
   getLiveSessions,
@@ -265,128 +269,125 @@ export default async function EnVivoPage({
         </div>
       </section>
 
-      {/* Bento Grid Highlights */}
-      <section className="bg-primary p-5 sm:p-8 md:p-12 lg:p-24 overflow-hidden">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-px bg-on-primary/10">
-          {BENTO_HIGHLIGHTS.map((item, i) => (
-            <BentoCell key={item.id} item={item} index={i} />
+      {/* Información Práctica */}
+      <section className="bg-primary p-5 sm:p-8 md:p-12 lg:p-24">
+        <h2 className="text-4xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter text-on-primary font-display mb-16 animate-slide-left">
+          INFORMACIÓN
+          <br />
+          PRÁCTICA
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PRACTICAL_INFO.map((item, i) => (
+            <div
+              key={item.id}
+              className={`group bg-primary-container border-l-4 border-secondary p-6 flex items-start gap-4 cursor-default transition-all duration-300 hover:bg-primary hover:border-l-8 hover:-translate-y-1 animate-fade-up stagger-${Math.min(i + 1, 7)}`}
+            >
+              <Icon
+                name={item.icon}
+                size={24}
+                className="text-secondary shrink-0 mt-1 transition-transform duration-300 group-hover:scale-110"
+              />
+              <div>
+                <h3 className="mono-data text-sm font-bold uppercase tracking-wider text-on-primary mb-2 transition-colors duration-300 group-hover:text-secondary">
+                  {item.title}
+                </h3>
+                <p className="text-on-primary-container text-sm leading-relaxed">
+                  {item.detail}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Newsletter / Editorial Callout */}
-      <section className="bg-surface p-5 sm:p-8 md:p-12 lg:p-24 flex flex-col items-center text-center">
-        <h2 className="text-2xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary max-w-4xl mb-12 font-display animate-fade-up stagger-1">
-          ¿TE PERDISTE ALGUNA SESIÓN? RECIBE EL RESUMEN EJECUTIVO DIARIO.
-        </h2>
-        <form className="w-full max-w-xl flex flex-col md:flex-row items-end gap-4 animate-fade-up stagger-3">
-          <div className="flex-grow w-full">
-            <label className="block text-left mono-data text-[10px] font-bold uppercase text-primary/60 mb-2">
-              DIRECCIÓN DE CORREO
-            </label>
-            <input
-              className="w-full bg-transparent border-b-2 border-primary focus:border-secondary transition-colors duration-200 py-4 text-base outline-none font-display font-bold uppercase"
-              placeholder="TU@EMAIL.COM"
-              type="email"
-            />
+      {/* Cómo Llegar */}
+      <section className="bg-surface p-5 sm:p-8 md:p-12 lg:p-24">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-4 lg:gap-2 items-stretch">
+          {/* Venue Details — title + content unified */}
+          <div className="flex flex-col animate-fade-up stagger-2">
+            <h2 className="text-[clamp(2.75rem,8vw,7rem)] leading-[0.85] font-black uppercase tracking-tighter text-primary font-display mb-8 animate-slide-left">
+              CÓMO
+              <br />
+              LLEGAR
+            </h2>
+
+            <h3 className="font-display text-xl sm:text-2xl font-black uppercase tracking-tighter text-primary mb-3">
+              {VENUE_DIRECTIONS.name}
+            </h3>
+            <p className="text-on-surface-variant mb-8 text-base">
+              {VENUE_DIRECTIONS.address}
+            </p>
+
+            <div className="mb-6 space-y-2">
+              <div className="mono-data text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-3">
+                Distancias
+              </div>
+              {VENUE_DIRECTIONS.distances.map((d) => (
+                <div
+                  key={d}
+                  className="flex items-center gap-3 mono-data text-sm text-primary"
+                >
+                  <span className="w-1.5 h-1.5 bg-secondary shrink-0" />
+                  {d}
+                </div>
+              ))}
+            </div>
+
+            <div className="mb-8 space-y-2">
+              <div className="mono-data text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-3">
+                Transporte
+              </div>
+              {VENUE_DIRECTIONS.transport.map((t) => (
+                <div
+                  key={t}
+                  className="flex items-center gap-3 text-sm text-primary"
+                >
+                  <span className="w-1.5 h-1.5 bg-primary shrink-0" />
+                  {t}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-4 mt-auto">
+              <a
+                href={VENUE_DIRECTIONS.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-xs hover:bg-primary-container transition-colors duration-200 btn-shine min-h-[48px]"
+              >
+                <Icon name="location_on" size={16} />
+                Abrir en Google Maps
+              </a>
+              <a
+                href={VENUE_DIRECTIONS.wazeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border-2 border-primary text-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-on-primary transition-colors duration-200 min-h-[48px]"
+              >
+                <Icon name="north_east" size={16} />
+                Abrir en Waze
+              </a>
+            </div>
           </div>
-          <button
-            type="submit"
-            className="bg-primary text-on-primary px-8 py-4 sm:px-12 sm:py-5 font-display font-bold uppercase tracking-widest text-sm w-full md:w-auto hover:bg-primary-container transition-colors duration-200 btn-shine min-h-[48px]"
-          >
-            SUSCRIBIRSE
-          </button>
-        </form>
+
+          {/* Google Maps Embed — full column height */}
+          <div className="animate-fade-up stagger-4">
+            <div className="border-2 border-primary overflow-hidden w-full h-[350px] sm:h-[450px] lg:h-full lg:min-h-[600px]">
+              <iframe
+                src={VENUE_DIRECTIONS.mapsEmbedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Ubicación del Hotel Barceló San José"
+              />
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   );
 }
 
-/* ------------------------- Bento grid sub-component ------------------------- */
-
-type BentoCellProps = {
-  item: (typeof BENTO_HIGHLIGHTS)[number];
-  index: number;
-};
-
-function BentoCell({ item, index }: BentoCellProps) {
-  const stagger = `stagger-${Math.min(index + 1, 7)}`;
-
-  if (item.kind === "recap") {
-    return (
-      <div
-        className={`sm:col-span-2 md:col-span-2 md:row-span-2 bg-primary p-6 sm:p-8 md:p-12 flex flex-col justify-end min-h-[300px] sm:min-h-[400px] md:min-h-[500px] border border-on-primary/10 animate-fade-up ${stagger}`}
-      >
-        <div className="mono-data text-secondary font-bold text-xs uppercase tracking-widest mb-4">
-          {item.label}
-        </div>
-        <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-on-primary uppercase tracking-tighter mb-6 leading-none font-display">
-          {item.title}
-        </h3>
-        <p className="text-on-primary/60 mb-8 max-w-sm">{item.body}</p>
-        <button className="w-fit border-b-2 border-secondary text-on-primary font-display font-bold uppercase tracking-widest py-2 hover:bg-secondary transition-colors duration-200 px-2 btn-shine">
-          LEER MÁS
-        </button>
-      </div>
-    );
-  }
-
-  if (item.kind === "gallery") {
-    return (
-      <div
-        className={`sm:col-span-2 md:col-span-2 bg-primary relative overflow-hidden min-h-[180px] sm:min-h-[250px] border border-on-primary/10 group animate-fade-in ${stagger}`}
-      >
-        {item.imageUrl && (
-          <Image
-            src={item.imageUrl}
-            alt={item.imageAlt ?? ""}
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover opacity-50 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-          />
-        )}
-        <div className="absolute bottom-8 left-8">
-          <span className="bg-on-primary text-primary px-3 py-1 mono-data text-[10px] font-bold uppercase">
-            {item.label}
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  if (item.kind === "stats") {
-    return (
-      <div
-        className={`bg-primary-container p-5 sm:p-8 border border-on-primary/10 animate-fade-up ${stagger}`}
-      >
-        <div className="text-4xl sm:text-6xl font-black text-secondary mono-data">
-          {item.statValue}
-        </div>
-        <div className="mono-data text-xs uppercase text-on-primary/60 mt-2">
-          {item.statLabel}
-        </div>
-      </div>
-    );
-  }
-
-  // location
-  return (
-    <div
-      className={`bg-surface p-5 sm:p-8 border border-on-primary/10 group cursor-pointer hover-lift animate-fade-up ${stagger}`}
-    >
-      <div className="flex justify-between items-start mb-12">
-        <Icon
-          name="location_on"
-          size={24}
-          className="text-primary group-hover:text-secondary transition-colors duration-200"
-        />
-        <span className="mono-data text-[10px] font-bold uppercase text-primary/40">
-          {item.label}
-        </span>
-      </div>
-      <div className="text-xl font-display font-bold text-primary uppercase">
-        {item.title}
-      </div>
-    </div>
-  );
-}
