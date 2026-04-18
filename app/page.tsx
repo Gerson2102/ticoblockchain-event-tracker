@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import ArrivalStatBand from "./components/arrival/ArrivalStatBand";
 import UtilityBar from "./components/arrival/UtilityBar";
 import DepartureRow from "./components/DepartureRow";
@@ -159,7 +160,11 @@ export default async function EnVivoPage({
         nextTransitionAt={nextTransitionAt}
         simulated={simulated !== null}
       />
-      {simulated && <DevTimeBanner simulated={simulated} />}
+      {simulated && (
+        <Suspense fallback={null}>
+          <DevTimeBanner simulated={simulated} />
+        </Suspense>
+      )}
 
       {/* Polite SR announcement — only emits during the event window so
           screen readers are notified when the live session transitions. */}
