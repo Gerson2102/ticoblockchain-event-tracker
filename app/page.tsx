@@ -1,3 +1,6 @@
+import Link from "next/link";
+import ArrivalStatBand from "./components/arrival/ArrivalStatBand";
+import UtilityBar from "./components/arrival/UtilityBar";
 import DepartureRow from "./components/DepartureRow";
 import DevTimeBanner from "./components/DevTimeBanner";
 import EnParaleloSection from "./components/hero/EnParaleloSection";
@@ -6,6 +9,7 @@ import HeroBefore from "./components/hero/HeroBefore";
 import HeroDuring from "./components/hero/HeroDuring";
 import Icon from "./components/Icon";
 import LiveRefresh from "./components/LiveRefresh";
+import NowScrubLine from "./components/NowScrubLine";
 import {
   PRACTICAL_INFO,
   SPONSOR_CALLOUTS,
@@ -16,6 +20,7 @@ import {
   getDaysUntilEvent,
   getEventPhase,
   getLiveSessions,
+  getMinutesUntilStart,
   getNextSessions,
   getNextTransitionAt,
   getSessionProgress,
@@ -215,15 +220,61 @@ export default async function EnVivoPage({
           </div>
         </div>
 
-        <div className="border-t-4 border-primary">
-          {agendaPreview.map((session, i) => (
-            <DepartureRow
-              key={session.id}
-              session={session}
-              staggerClass={`stagger-${Math.min(i + 3, 7)}`}
+        {/* Departure board: rail + rows with a NOW scrub line anchored to
+            the past/upcoming boundary. Before-event → line at top;
+            after-event → line at bottom. */}
+        {(() => {
+          const firstNonPastIdx = agendaPreview.findIndex(
+            (s) => s.status !== "past",
+          );
+          const scrubIndex =
+            phase === "after"
+              ? agendaPreview.length
+              : firstNonPastIdx === -1
+                ? agendaPreview.length
+                : firstNonPastIdx;
+          return (
+            <div className="border-t-4 border-primary">
+              {scrubIndex === 0 && <NowScrubLine now={now} phase={phase} />}
+              {agendaPreview.map((session, i) => {
+                const countdownMinutes =
+                  session.status === "next"
+                    ? (getMinutesUntilStart(session.startTime, now) ?? undefined)
+                    : undefined;
+                return (
+                  <div key={session.id}>
+                    <DepartureRow
+                      session={session}
+                      staggerClass={`stagger-${Math.min(i + 3, 7)}`}
+                      countdownMinutes={countdownMinutes}
+                    />
+                    {i + 1 === scrubIndex && scrubIndex !== 0 && (
+                      <NowScrubLine now={now} phase={phase} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+
+        {/* Full-agenda CTA — editorial footer bar closing the preview */}
+        <Link
+          href="/agenda"
+          className="mt-8 flex items-center justify-between bg-primary text-on-primary hover:bg-secondary transition-colors duration-200 px-6 sm:px-8 py-5 sm:py-6 group animate-fade-up stagger-5"
+        >
+          <span className="font-display font-black uppercase tracking-tighter text-xl sm:text-2xl md:text-3xl">
+            AGENDA COMPLETA · 14 MAYO
+          </span>
+          <span className="mono-data text-[10px] sm:text-xs uppercase font-bold tracking-widest flex items-center gap-3">
+            Ver las {sortedSessions.length} sesiones
+            <Icon
+              name="arrow_forward"
+              size={20}
+              className="group-hover:translate-x-1 transition-transform duration-200"
             />
-          ))}
-        </div>
+          </span>
+        </Link>
       </section>
 
       {/* Información Práctica — editorial manifest. Each row has an oversized
@@ -275,89 +326,64 @@ export default async function EnVivoPage({
         </div>
       </section>
 
-      {/* Cómo Llegar */}
+      {/* Cómo Llegar — Arrival Dossier. Editorial layered structure:
+          headline → stat band → route diagram → transport grid → utility
+          bar → venue photo strip. Replaces the Google Maps iframe with a
+          custom cobalt route diagram so the section stays on-brand. */}
       <section className="bg-surface p-5 sm:p-8 md:p-12 lg:p-24">
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-4 lg:gap-2 items-stretch">
-          <div className="flex flex-col animate-fade-up stagger-2">
-            <h2 className="text-[clamp(2.75rem,8vw,7rem)] leading-[0.85] font-black uppercase tracking-tighter text-primary font-display mb-8 animate-slide-left">
-              CÓMO
-              <br />
-              LLEGAR
-            </h2>
-
-            <h3 className="font-display text-xl sm:text-2xl font-black uppercase tracking-tighter text-primary mb-3">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
+          <h2 className="text-[clamp(2.75rem,8vw,7rem)] leading-[0.85] font-black uppercase tracking-tighter text-primary font-display animate-slide-left">
+            CÓMO
+            <br />
+            LLEGAR
+          </h2>
+          <div className="max-w-md animate-fade-up stagger-2">
+            <div className="mono-data text-[10px] sm:text-xs uppercase tracking-widest font-bold text-secondary mb-2 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-secondary shrink-0" aria-hidden="true" />
+              Dossier de Llegada
+            </div>
+            <h3 className="font-display text-xl sm:text-2xl font-black uppercase tracking-tighter text-primary">
               {VENUE_DIRECTIONS.name}
             </h3>
-            <p className="text-on-surface-variant mb-8 text-base">
+            <p className="text-on-surface-variant mt-2 text-sm sm:text-base">
               {VENUE_DIRECTIONS.address}
             </p>
-
-            <div className="mb-6 space-y-2">
-              <div className="mono-data text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-3">
-                Distancias
-              </div>
-              {VENUE_DIRECTIONS.distances.map((d) => (
-                <div
-                  key={d}
-                  className="flex items-center gap-3 mono-data text-sm text-primary"
-                >
-                  <span className="w-1.5 h-1.5 bg-secondary shrink-0" />
-                  {d}
-                </div>
-              ))}
-            </div>
-
-            <div className="mb-8 space-y-2">
-              <div className="mono-data text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-3">
-                Transporte
-              </div>
-              {VENUE_DIRECTIONS.transport.map((t) => (
-                <div
-                  key={t}
-                  className="flex items-center gap-3 text-sm text-primary"
-                >
-                  <span className="w-1.5 h-1.5 bg-primary shrink-0" />
-                  {t}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-4 mt-auto">
-              <a
-                href={VENUE_DIRECTIONS.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-xs hover:bg-primary-container transition-colors duration-200 btn-shine min-h-[48px]"
-              >
-                <Icon name="location_on" size={16} />
-                Abrir en Google Maps
-              </a>
-              <a
-                href={VENUE_DIRECTIONS.wazeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border-2 border-primary text-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-on-primary transition-colors duration-200 min-h-[48px]"
-              >
-                <Icon name="north_east" size={16} />
-                Abrir en Waze
-              </a>
-            </div>
           </div>
+        </div>
 
-          <div className="animate-fade-up stagger-4">
-            <div className="border-2 border-primary overflow-hidden w-full h-[350px] sm:h-[450px] lg:h-full lg:min-h-[600px]">
-              <iframe
-                src={VENUE_DIRECTIONS.mapsEmbedUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Ubicación del Hotel Barceló San José"
-              />
-            </div>
+        {/* Band 1 — Stat hooks */}
+        <ArrivalStatBand stats={VENUE_DIRECTIONS.stats} />
+
+        {/* Band 2 — Map preview */}
+        <div className="mt-10 md:mt-14 animate-fade-up stagger-3">
+          <div className="mono-data text-[10px] sm:text-xs uppercase tracking-widest font-bold text-primary mb-4 flex items-center gap-2">
+            <span
+              className="w-1.5 h-1.5 bg-secondary shrink-0"
+              aria-hidden="true"
+            />
+            Ubicación · Hotel Barceló
           </div>
+          <div className="border-2 border-primary bg-primary">
+            <iframe
+              title={`Mapa · ${VENUE_DIRECTIONS.name}`}
+              src={`https://maps.google.com/maps?q=${VENUE_DIRECTIONS.gps.lat},${VENUE_DIRECTIONS.gps.lng}&z=15&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-[320px] sm:h-[420px] md:h-[480px] block"
+            />
+          </div>
+        </div>
+
+        {/* Band 3 — Utility bar */}
+        <div className="mt-6 sm:mt-8 animate-fade-up stagger-4">
+          <UtilityBar
+            address={VENUE_DIRECTIONS.shareAddress}
+            mapsUrl={VENUE_DIRECTIONS.mapsUrl}
+            wazeUrl={VENUE_DIRECTIONS.wazeUrl}
+            appleMapsUrl={VENUE_DIRECTIONS.appleMapsUrl}
+            gpsMapsUrl={`https://www.google.com/maps/dir/?api=1&destination=${VENUE_DIRECTIONS.gps.lat},${VENUE_DIRECTIONS.gps.lng}`}
+          />
         </div>
       </section>
     </main>

@@ -54,12 +54,27 @@ export type PracticalInfoItem = {
   body: string; // prose detail
 };
 
+// Stat-band hook for the arrival section — same editorial shape as
+// PracticalInfoItem, duplicated here so the venue-directions module can
+// own its own vocabulary (distances, parking, elevation) without leaking
+// back into the schedule feed.
+export type ArrivalStat = {
+  id: string;
+  hook: string;
+  label: string;
+  body: string;
+};
+
 export type VenueDirections = {
   name: string;
   address: string;
-  distances: readonly string[];
-  transport: readonly string[];
-  mapsEmbedUrl: string;
+  // Short-form address optimized for clipboard + WhatsApp share flows.
+  // Keeps the city/country but strips the hotel name so the receiver gets
+  // a clean navigable string.
+  shareAddress: string;
+  gps: { lat: number; lng: number };
+  stats: readonly ArrivalStat[];
   mapsUrl: string;
   wazeUrl: string;
+  appleMapsUrl: string;
 };

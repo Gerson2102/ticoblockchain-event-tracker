@@ -21,7 +21,10 @@ export type IconName =
   | "how_to_reg"
   | "restaurant"
   | "wc"
-  | "door_front";
+  | "door_front"
+  | "content_copy"
+  | "check"
+  | "arrow_forward";
 
 // All paths use fill="currentColor" so the icon tints via CSS `color`.
 // Exported so SVG contexts (see FloorplanSVG) can render the same glyphs
@@ -57,6 +60,13 @@ export const ICON_PATHS: Record<IconName, string> = {
   // Door with handle.
   door_front:
     "M18 20V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16H3v2h18v-2h-3zm-2 0H8V4h8v16zm-2-9h-2v2h2v-2z",
+  // Copy (two stacked sheets).
+  content_copy:
+    "M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z",
+  // Check mark.
+  check: "M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z",
+  // Arrow forward.
+  arrow_forward: "M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z",
 };
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "children"> & {

@@ -5,55 +5,107 @@ import StatusBadge from "./StatusBadge";
 type DepartureRowProps = {
   session: Session;
   staggerClass?: string;
+  // Minutes until this session begins — renders on the NEXT status block.
+  countdownMinutes?: number;
 };
 
 // Departure-board style row for the home page agenda preview.
-// 12-col grid: time | stage badge | title | status.
+// A single row of an airport FIDS: rail node | time | stage monogram |
+// title + speaker | status. The LIVE row inverts to cobalt-on-white for
+// "contrast = elevation" per the Horizonte Cobalt system.
 export default function DepartureRow({
   session,
   staggerClass,
+  countdownMinutes,
 }: DepartureRowProps) {
   const isLive = session.status === "live";
   const isPast = session.status === "past";
+  const isNext = session.status === "next";
 
   const rowClasses = [
-    "grid grid-cols-1 md:grid-cols-12 py-8 items-center border-b border-primary/10 gap-2 md:gap-0 animate-fade-up",
+    "grid grid-cols-[2rem_auto_1fr_auto] md:grid-cols-[2.5rem_minmax(6rem,11rem)_auto_minmax(0,1fr)_auto] items-center gap-x-3 sm:gap-x-5 md:gap-x-6 py-6 sm:py-7 border-b border-primary/20 animate-fade-up group",
     isLive
-      ? "bg-surface-container-high"
-      : "hover:bg-surface-container-high transition-colors duration-200 group",
-    isPast ? "opacity-40" : "",
+      ? "bg-primary text-on-primary border-b-secondary"
+      : "hover:bg-surface-container-high transition-colors duration-200",
     staggerClass ?? "",
   ]
     .filter(Boolean)
     .join(" ");
 
+  // Rail node: crimson pulsing square for LIVE, filled cobalt for past,
+  // hollow cobalt outline for upcoming. Always placed in its own column so
+  // the nodes line up vertically into a timeline rail.
+  const nodeClasses = isLive
+    ? "w-3 h-3 bg-secondary animate-live-glow"
+    : isPast
+      ? "w-3 h-3 bg-primary/40"
+      : "w-3 h-3 border-2 border-primary bg-surface";
+
   const timeClasses = [
-    "md:col-span-2 mono-data text-2xl font-bold tracking-tighter",
+    "mono-data font-black tracking-tighter leading-none whitespace-nowrap",
+    "text-[clamp(1.75rem,4vw,3rem)]",
     isLive
-      ? "text-secondary"
-      : "text-primary/40 group-hover:text-primary transition-colors duration-200",
+      ? "text-on-primary"
+      : isPast
+        ? "text-primary/55"
+        : "text-primary group-hover:text-primary",
   ].join(" ");
 
   const titleClasses = [
-    "text-lg sm:text-2xl font-display font-bold uppercase leading-tight",
+    "font-display font-bold uppercase tracking-tight leading-tight",
+    "text-lg sm:text-xl md:text-2xl",
     isLive
-      ? "text-primary font-black italic underline underline-offset-8 decoration-secondary decoration-4"
-      : "group-hover:translate-x-2 transition-transform duration-300 text-primary",
+      ? "text-on-primary font-black tracking-tighter"
+      : isPast
+        ? "text-primary/70"
+        : "text-primary group-hover:translate-x-1 transition-transform duration-300",
   ].join(" ");
+
+  const speakerLine = session.speakerName
+    ? session.speakerOrg
+      ? `${session.speakerName} — ${session.speakerOrg}`
+      : session.speakerName
+    : session.speakerOrg;
+
+  const speakerClasses = [
+    "mono-data text-[10px] sm:text-[11px] uppercase tracking-widest font-bold mt-2",
+    isLive ? "text-on-primary/80" : "text-on-surface-variant",
+  ].join(" ");
+
+  const timeLabel = isLive ? "AHORA" : session.startTime;
 
   return (
     <div className={rowClasses}>
-      <div className={timeClasses}>
-        {isLive ? "AHORA" : session.startTime}
+      {/* Rail node */}
+      <div className="flex justify-center items-center self-start pt-2 md:pt-3">
+        <span className={nodeClasses} aria-hidden="true" />
       </div>
-      <div className="md:col-span-2">
+
+      {/* Time */}
+      <div className={timeClasses}>{timeLabel}</div>
+
+      {/* Stage monogram */}
+      <div className="hidden md:block">
         <StageBadge stage={session.stage} size="md" />
       </div>
-      <div className="md:col-span-6">
+
+      {/* Title + speaker */}
+      <div className="col-start-3 md:col-start-4 row-start-1 md:row-start-auto min-w-0">
         <h5 className={titleClasses}>{session.title}</h5>
+        {speakerLine && <div className={speakerClasses}>{speakerLine}</div>}
+        {/* Stage badge appears on mobile under the title so the grid stays
+            readable on narrow viewports. */}
+        <div className="md:hidden mt-2">
+          <StageBadge stage={session.stage} size="sm" />
+        </div>
       </div>
-      <div className="md:col-span-2 text-left md:text-right">
-        <StatusBadge status={session.status} />
+
+      {/* Status */}
+      <div className="col-start-4 md:col-start-5 row-start-1 md:row-start-auto text-right self-start md:self-center pt-1 md:pt-0">
+        <StatusBadge
+          status={session.status}
+          countdownMinutes={isNext ? countdownMinutes : undefined}
+        />
       </div>
     </div>
   );

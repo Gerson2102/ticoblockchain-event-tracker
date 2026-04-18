@@ -3,6 +3,9 @@ import type { SessionStatus } from "../data/types";
 type StatusBadgeProps = {
   status: SessionStatus;
   size?: "sm" | "md";
+  // When provided on a `next` status, renders "SIGUIENTE · EN N MIN" so
+  // the departure-board row telegraphs exactly how soon the talk starts.
+  countdownMinutes?: number;
 };
 
 const LABELS: Record<SessionStatus, string> = {
@@ -12,7 +15,18 @@ const LABELS: Record<SessionStatus, string> = {
   past: "FINALIZADO",
 };
 
-export default function StatusBadge({ status, size = "md" }: StatusBadgeProps) {
+function formatCountdownLabel(minutes: number): string {
+  if (minutes < 60) return `EN ${minutes} MIN`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m === 0 ? `EN ${h} H` : `EN ${h} H ${m} MIN`;
+}
+
+export default function StatusBadge({
+  status,
+  size = "md",
+  countdownMinutes,
+}: StatusBadgeProps) {
   const padding = size === "sm" ? "px-2 py-0.5" : "px-3 py-1";
   const textSize = size === "sm" ? "text-[9px]" : "text-[10px]";
 
@@ -26,18 +40,22 @@ export default function StatusBadge({ status, size = "md" }: StatusBadgeProps) {
     );
   }
   if (status === "next") {
+    const label =
+      typeof countdownMinutes === "number" && countdownMinutes > 0
+        ? `${LABELS.next} · ${formatCountdownLabel(countdownMinutes)}`
+        : LABELS.next;
     return (
       <span
         className={`bg-primary text-on-primary mono-data ${textSize} ${padding} font-bold uppercase`}
       >
-        {LABELS.next}
+        {label}
       </span>
     );
   }
   if (status === "past") {
     return (
       <span
-        className={`border-2 border-primary/20 text-primary/40 mono-data ${textSize} ${padding} font-bold uppercase`}
+        className={`mono-data ${textSize} ${padding} font-bold uppercase text-primary/50`}
       >
         {LABELS.past}
       </span>

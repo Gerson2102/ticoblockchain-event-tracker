@@ -99,21 +99,38 @@ export const PRACTICAL_INFO: readonly PracticalInfoItem[] = [
   },
 ] as const;
 
-// Venue directions — replaces the old newsletter section.
+// Venue directions — drives the Cómo Llegar "Arrival Dossier" section.
+// Structured as editorial data hooks (stats + transport modes) rather than
+// loose bullet strings so each block can render as a mono-data card with
+// its own typography weight. The GPS coords fuel Waze/Apple Maps deep
+// links and the "comparte con tu chofer" WhatsApp payload.
 export const VENUE_DIRECTIONS: VenueDirections = {
   name: "Hotel Barceló San José Palacio",
   address: "Robledal de La Uruca, San José 1150, Costa Rica",
-  distances: [
-    "13 km del Aeropuerto Juan Santamaría",
-    "5 km del centro de San José",
+  shareAddress: "Hotel Barceló San José Palacio, Robledal de La Uruca, San José, Costa Rica",
+  gps: { lat: 9.9454534, lng: -84.105194 },
+  stats: [
+    {
+      id: "airport",
+      hook: "13 KM",
+      label: "Aeropuerto · Juan Santamaría",
+      body: "Aproximadamente 15 minutos en Uber o DiDi desde la terminal internacional, según el tráfico de General Cañas.",
+    },
+    {
+      id: "downtown",
+      hook: "5 KM",
+      label: "Centro · San José",
+      body: "10 minutos en vehículo por la Autopista General Cañas. Ideal si te hospedás en el casco central de la capital.",
+    },
+    {
+      id: "parking",
+      hook: "GRATIS",
+      label: "Parqueo · Vigilado",
+      body: "Estacionamiento cubierto y vigilado del hotel incluido para todos los asistentes registrados del evento.",
+    },
   ],
-  transport: [
-    "Uber / DiDi — ~15 min desde el aeropuerto",
-    "Taxi oficial disponible en el aeropuerto",
-    "Estacionamiento gratuito en el hotel",
-  ],
-  mapsEmbedUrl:
-    "https://maps.google.com/maps?q=Hotel+Barcelo+San+Jose+Costa+Rica&t=&z=15&ie=UTF8&iwloc=&output=embed",
-  mapsUrl: "https://www.google.com/maps/place/Barcel%C3%B3+San+Jos%C3%A9/",
-  wazeUrl: "https://www.waze.com/ul?q=Hotel%20Barcel%C3%B3%20San%20Jos%C3%A9",
+  mapsUrl: "https://maps.app.goo.gl/BBFHKXZaz3c9iFjw5",
+  wazeUrl: "https://www.waze.com/ul?ll=9.9454534,-84.105194&navigate=yes",
+  appleMapsUrl:
+    "https://maps.apple.com/?q=Hotel+Barcel%C3%B3+San+Jos%C3%A9&ll=9.9454534,-84.105194",
 } as const;
