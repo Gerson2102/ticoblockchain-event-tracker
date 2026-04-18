@@ -1,14 +1,12 @@
-import type { CSSProperties } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import DepartureRow from "./components/DepartureRow";
 import DevTimeBanner from "./components/DevTimeBanner";
+import EnParaleloSection from "./components/hero/EnParaleloSection";
+import HeroAfter from "./components/hero/HeroAfter";
+import HeroBefore from "./components/hero/HeroBefore";
+import HeroDuring from "./components/hero/HeroDuring";
 import Icon from "./components/Icon";
-import LiveDot from "./components/LiveDot";
 import LiveRefresh from "./components/LiveRefresh";
-import SponsorCallout from "./components/SponsorCallout";
 import {
-  HERO_CONTENT,
   PRACTICAL_INFO,
   SPONSOR_CALLOUTS,
   VENUE_DIRECTIONS,
@@ -23,7 +21,7 @@ import {
   getSessionProgress,
   getSessionsAt,
 } from "./data/sessions";
-import type { Session, Stage } from "./data/types";
+import type { Session } from "./data/types";
 import { VENUE } from "./data/venue";
 
 // Dynamically rendered — the page is intentionally live and reads ?now=
@@ -61,48 +59,6 @@ function heroHeadline(session: Session | undefined): {
   return { first: session.title, last: "" };
 }
 
-// Minutes from `now` to a session's startTime in event-local time. Returns
-// null when the session is already underway or past. Drives the "en 12m"
-// countdown chips on the departure-board right rail.
-function getMinutesUntilStart(startTime: string, now: Date): number | null {
-  const startMs = new Date(
-    `${VENUE.eventDateISO}T${startTime}:00-06:00`,
-  ).getTime();
-  const diffMs = startMs - now.getTime();
-  if (diffMs <= 0) return null;
-  return Math.floor(diffMs / 60000);
-}
-
-function formatCountdown(minutes: number): string {
-  if (minutes < 60) return `en ${minutes}m`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m === 0 ? `en ${h}h` : `en ${h}h ${m}m`;
-}
-
-// Compact stage chip — color carries meaning (MAIN cobalt / ESC 2 crimson /
-// AMBOS pale-cobalt), with an icon-shaped cue so it's not color-only.
-function StageBadge({ stage }: { stage: Stage }) {
-  const { bg, glyph, label } =
-    stage === "main"
-      ? { bg: "bg-primary text-on-primary", glyph: "▮", label: "MAIN" }
-      : stage === "escenario-2"
-        ? { bg: "bg-secondary text-on-secondary", glyph: "▯", label: "ESC 2" }
-        : {
-            bg: "bg-primary-fixed text-on-primary-fixed",
-            glyph: "◫",
-            label: "AMBOS",
-          };
-  return (
-    <span
-      className={`${bg} mono-data text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 inline-flex items-center gap-1 shrink-0`}
-    >
-      <span aria-hidden="true">{glyph}</span>
-      {label}
-    </span>
-  );
-}
-
 // Screen-reader announcement for the current live session. Updates whenever
 // the server re-renders at a transition boundary, and the polite live region
 // forwards that to assistive tech without stealing focus.
@@ -127,7 +83,7 @@ export default async function EnVivoPage({
   const mainLive = phase === "during" ? live.main : undefined;
   const parallelLive = phase === "during" ? live.escenario2 : undefined;
 
-  const sidebarSessions = getNextSessions(3, now);
+  const nextUpSessions = getNextSessions(3, now);
   const daysUntilEvent = getDaysUntilEvent(now);
 
   // Match the currently live sessions against sponsor-linked activities
@@ -143,10 +99,9 @@ export default async function EnVivoPage({
         null
       : null;
 
-  // Parallel track: only treat escenario-2 as "distinct" when it's not just
-  // a mirrored "both"-stage session already shown in the main hero — otherwise
-  // we'd render the same talk twice. Empty state falls back to the next
-  // scheduled esc-2 / both talk so the spatial map stays intact.
+  // Only treat escenario-2 as "distinct" when it's not a mirrored "both"-
+  // stage session already shown in the main hero. Empty state falls back
+  // to the next scheduled esc-2 / both talk so the spatial map stays intact.
   const distinctParallel =
     parallelLive && parallelLive.id !== mainLive?.id ? parallelLive : undefined;
   const parallelProgress = distinctParallel
@@ -202,612 +157,40 @@ export default async function EnVivoPage({
       {simulated && <DevTimeBanner simulated={simulated} />}
 
       {/* Polite SR announcement — only emits during the event window so
-          screen readers are notified when the live session transitions.
-          Invisible to sighted users. */}
+          screen readers are notified when the live session transitions. */}
       {phase === "during" && (
         <div aria-live="polite" aria-atomic="true" className="sr-only">
           {liveAnnouncement(mainLive)}
         </div>
       )}
 
-      {/* ── PHASE: BEFORE · countdown hero ────────────────────────────── */}
-      {/* Composition: masthead rule → countdown glyph (left) + wordmark
-          (right) filling the hero width → meta strip + CTAs at the bottom.
-          The countdown is the protagonist because it's the live data the
-          pre-event page exists to deliver; same DNA as "AHORA" during the
-          event. */}
       {phase === "before" && (
-        <section className="grid grid-cols-1 lg:grid-cols-12 min-h-[60dvh] sm:min-h-[75dvh] lg:min-h-[85dvh] bg-primary overflow-hidden">
-          <div className="lg:col-span-9 relative flex flex-col p-5 sm:p-8 md:p-12 text-on-primary">
-            {/* Masthead rule — eyebrow left, event date right. */}
-            <div className="flex items-center justify-between gap-4 pb-5 border-b-2 border-on-primary/20 animate-fade-up">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-secondary animate-live-glow" />
-                <span className="mono-data text-[10px] sm:text-xs font-bold tracking-widest uppercase">
-                  PRÓXIMO EVENTO · SAN JOSÉ
-                </span>
-              </div>
-              <span className="mono-data text-[10px] sm:text-xs uppercase tracking-widest text-on-primary/60">
-                14.05.26 · GMT-6
-              </span>
-            </div>
-
-            {/* Hero composition: countdown eyebrow → wordmark hero →
-                crimson "2026" accent. A single vertical reading unit so
-                nothing competes for attention. The wordmark's short/long
-                asymmetry (TICO / BLOCKCHAIN) fills the column naturally
-                instead of fighting it. */}
-            <div className="flex-1 flex flex-col justify-center py-10 md:py-14">
-              {/* Countdown pill — context eyebrow above the wordmark. Lives
-                  as a small crimson chip so the wordmark stays the hero. */}
-              <div className="animate-fade-up stagger-1 mb-6 md:mb-8">
-                <span className="bg-secondary text-on-secondary mono-data text-[11px] sm:text-xs font-bold uppercase tracking-widest px-3 py-1.5 inline-flex items-center gap-2">
-                  <span
-                    className="w-1.5 h-1.5 bg-on-secondary shrink-0"
-                    aria-hidden="true"
-                  />
-                  {daysUntilEvent === 0
-                    ? "Hoy · Arranca 08:00 CRT"
-                    : daysUntilEvent === 1
-                      ? `Mañana · 08:00 CRT`
-                      : `En ${daysUntilEvent} días`}
-                </span>
-              </div>
-
-              {/* Wordmark — TICO (short) over BLOCKCHAIN (long) with CHAIN
-                  in crimson for the brand accent. BLOCKCHAIN at this scale
-                  fills the column width; TICO stays short by design. */}
-              <h1
-                style={{
-                  fontSize: "clamp(4.5rem, 11vw, 10.5rem)",
-                  letterSpacing: "clamp(-0.5rem, -0.5vw, -0.25rem)",
-                }}
-                className="font-display font-black uppercase leading-[0.88] break-words animate-reveal-up stagger-2"
-              >
-                TICO
-                <br />
-                BLOCK
-                <span className="text-secondary">CHAIN</span>
-              </h1>
-              <div className="mono-data text-secondary font-black tracking-tighter text-4xl sm:text-6xl md:text-7xl lg:text-8xl mt-3 md:mt-5 animate-fade-up stagger-3">
-                2026
-              </div>
-            </div>
-
-            {/* Bottom: meta strip + venue + CTAs. Top/bottom rules sit on
-                the grid itself so cell padding = the visual breathing room
-                between line and label (tight ceiling, no floating gap). */}
-            <div className="mt-auto space-y-6 animate-fade-up stagger-4">
-              <div className="grid grid-cols-3 gap-0 border-y-2 border-on-primary/20">
-                <div className="py-3 px-1 border-r border-on-primary/15">
-                  <div className="mono-data text-[10px] uppercase tracking-widest text-on-primary/50 mb-1">
-                    Fecha
-                  </div>
-                  <div className="mono-data text-base sm:text-xl md:text-2xl font-black text-on-primary tracking-tighter">
-                    14.05.26
-                  </div>
-                </div>
-                <div className="py-3 px-1 border-r border-on-primary/15">
-                  <div className="mono-data text-[10px] uppercase tracking-widest text-on-primary/50 mb-1">
-                    Inicio
-                  </div>
-                  <div className="mono-data text-base sm:text-xl md:text-2xl font-black text-on-primary tracking-tighter">
-                    08:00
-                  </div>
-                </div>
-                <div className="py-3 px-1">
-                  <div className="mono-data text-[10px] uppercase tracking-widest text-on-primary/50 mb-1">
-                    Venue
-                  </div>
-                  <div className="mono-data text-base sm:text-xl md:text-2xl font-black text-on-primary tracking-tighter">
-                    BARCELÓ
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="mono-data text-xs sm:text-sm uppercase tracking-wider text-on-primary/70">
-                  HOTEL BARCELÓ SAN JOSÉ · COSTA RICA
-                </div>
-                <div className="flex flex-wrap gap-4">
-                  <Link
-                    href="/agenda"
-                    className="bg-secondary text-on-secondary px-6 py-3 sm:px-8 sm:py-4 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center gap-2 btn-shine hover:scale-105 transition-transform duration-200 min-h-[48px]"
-                  >
-                    <Icon name="north_east" size={14} /> VER AGENDA
-                  </Link>
-                  <Link
-                    href="/exponentes"
-                    className="border-2 border-on-primary text-on-primary px-6 py-3 sm:px-8 sm:py-4 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center gap-2 hover:bg-on-primary hover:text-primary transition-colors duration-200 min-h-[48px]"
-                  >
-                    EXPONENTES
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute inset-0 z-[-1] opacity-20 mix-blend-overlay overflow-hidden">
-              <Image
-                src={HERO_CONTENT.heroImageUrl}
-                alt={HERO_CONTENT.heroImageAlt}
-                fill
-                sizes="100vw"
-                className="object-cover animate-hero-zoom"
-                priority
-              />
-            </div>
-          </div>
-
-          {/* Sidebar: pre-event departure board — same dense vocabulary as
-              the during-phase rail (color-coded stage badges, crimson left
-              slide on hover, mono time chips), but no AHORA strip since
-              nothing is live yet. Shows the opening arc of the day so
-              attendees can scan the flow at a glance. */}
-          <div className="lg:col-span-3 bg-surface-container-low p-5 sm:p-8 flex flex-col border-t lg:border-t-0 lg:border-l border-primary/10">
-            <h3 className="font-display font-black text-xl uppercase mb-1 flex items-center justify-between text-primary animate-fade-up stagger-2">
-              AGENDA DEL DÍA
-              <Icon name="sensors" size={22} />
-            </h3>
-            <p className="mono-data text-[10px] font-bold uppercase tracking-widest text-primary/60 mb-6 animate-fade-up stagger-2">
-              14 MAYO · DOS ESCENARIOS
-            </p>
-
-            <div className="flex flex-col">
-              {sortedSessions.slice(0, 8).map((session, i) => {
-                const href =
-                  session.stage === "escenario-2"
-                    ? "/agenda?stage=escenario-2"
-                    : session.stage === "main"
-                      ? "/agenda?stage=main"
-                      : "/agenda";
-                return (
-                  <Link
-                    key={session.id}
-                    href={href}
-                    aria-label={`Ver en agenda: ${session.title}`}
-                    className={`group relative block py-3 border-b border-primary/10 border-l-[3px] border-l-transparent pl-4 -ml-4 hover:border-l-secondary hover:translate-x-1 transition-all duration-200 cursor-pointer animate-fade-up stagger-${Math.min(i + 3, 7)}`}
-                  >
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="mono-data text-sm font-black text-primary tabular-nums">
-                        {session.startTime}
-                      </span>
-                      <StageBadge stage={session.stage} />
-                    </div>
-                    <h4 className="font-display font-bold text-sm uppercase leading-snug text-primary group-hover:text-secondary transition-colors duration-200 line-clamp-2">
-                      {session.title}
-                    </h4>
-                    <Icon
-                      name="north_east"
-                      size={14}
-                      className="absolute top-3 right-0 text-primary/0 group-hover:text-secondary transition-colors duration-200"
-                    />
-                  </Link>
-                );
-              })}
-            </div>
-
-            <Link
-              href="/agenda"
-              className="mt-auto pt-6 block animate-fade-in stagger-6 group/link"
-            >
-              <div className="mono-data font-black text-[11px] uppercase tracking-widest text-primary border-t border-primary/15 pt-4 flex items-center justify-between group-hover/link:text-secondary transition-colors duration-200">
-                VER AGENDA COMPLETA
-                <Icon
-                  name="north_east"
-                  size={14}
-                  className="group-hover/link:translate-x-1 transition-transform duration-200"
-                />
-              </div>
-              <p className="mono-data text-[10px] uppercase tracking-widest text-primary/50 mt-2">
-                {HERO_CONTENT.capacityLabel}
-              </p>
-            </Link>
-          </div>
-        </section>
+        <HeroBefore
+          daysUntilEvent={daysUntilEvent}
+          openingSessions={sortedSessions.slice(0, 8)}
+        />
       )}
 
-      {/* ── PHASE: DURING · live speaker hero ─────────────────────────── */}
       {phase === "during" && (
-        <section className="grid grid-cols-1 lg:grid-cols-12 min-h-[60dvh] sm:min-h-[70dvh] lg:min-h-[85dvh] bg-primary overflow-hidden">
-          <div className="lg:col-span-9 relative flex flex-col justify-between p-5 sm:p-8 md:p-12 text-on-primary">
-            <div className="flex items-center gap-3 animate-fade-up">
-              <LiveDot />
-              <span className="mono-data text-sm font-bold tracking-widest uppercase">
-                {HERO_CONTENT.liveLabel}
-              </span>
-            </div>
-
-            <div className="mt-12 md:mt-0">
-              <h1
-                aria-label={
-                  headline.last
-                    ? `${headline.first} ${headline.last}`
-                    : headline.first
-                }
-                className="text-[clamp(2.5rem,12vw,12rem)] leading-[0.85] font-black uppercase tracking-tighter -ml-1 md:-ml-4 break-words font-display animate-reveal-up stagger-1"
-              >
-                {headline.first}
-                {headline.last && (
-                  <>
-                    <br />
-                    {headline.last}
-                  </>
-                )}
-              </h1>
-              <div className="mt-8 flex items-baseline gap-4 border-l-4 border-secondary pl-6 animate-fade-up stagger-3">
-                <h2 className="text-xl sm:text-2xl md:text-4xl font-display font-bold uppercase tracking-tight max-w-2xl">
-                  {mainLive?.title ?? "Sesión en preparación"}
-                </h2>
-              </div>
-            </div>
-
-            <div className="mt-8 sm:mt-12 md:mt-24 space-y-6 animate-fade-up stagger-4">
-              {/* Real session progress — tied to (now - start)/(end - start)
-                  via --progress-pct; animates on first paint and on every
-                  server refresh at a transition boundary. */}
-              <div
-                className="w-full bg-on-primary/10 h-1"
-                role="progressbar"
-                aria-label={
-                  mainLive
-                    ? `Progreso de ${mainLive.title}`
-                    : "Progreso de la sesión en curso"
-                }
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={progressPct}
-              >
-                <div
-                  className="bg-secondary h-full animate-progress-fill"
-                  style={
-                    { "--progress-pct": `${progressPct}%` } as CSSProperties
-                  }
-                />
-              </div>
-              {/* Stacked meta: mono label → bold title → time chip. Replaces
-                  the single-line "PRÓXIMA EN MAIN STAGE: …" that wrapped
-                  unreadably on narrow screens. */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                <div className="min-w-0 max-w-full md:max-w-[60%]">
-                  <div className="mono-data text-[10px] sm:text-xs uppercase tracking-widest text-on-primary/60 mb-1">
-                    PRÓXIMA EN MAIN STAGE
-                  </div>
-                  {sidebarSessions[0] ? (
-                    <div className="flex items-baseline gap-3 flex-wrap">
-                      <span className="font-display text-base sm:text-lg md:text-xl font-bold uppercase tracking-tight text-on-primary leading-tight">
-                        {sidebarSessions[0].title}
-                      </span>
-                      <span className="mono-data text-sm sm:text-base font-black text-secondary tracking-tighter">
-                        {sidebarSessions[0].startTime}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="font-display text-base sm:text-lg font-bold uppercase tracking-tight text-on-primary">
-                      Cierre de jornada
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-4 shrink-0">
-                  <Link
-                    href="/agenda"
-                    className="bg-secondary text-on-secondary px-6 py-3 sm:px-8 sm:py-4 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center gap-2 btn-shine hover:scale-105 transition-transform duration-200 min-h-[48px]"
-                  >
-                    <Icon name="north_east" size={14} /> VER AGENDA COMPLETA
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute inset-0 z-[-1] opacity-20 mix-blend-overlay overflow-hidden">
-              <Image
-                src={HERO_CONTENT.heroImageUrl}
-                alt={HERO_CONTENT.heroImageAlt}
-                fill
-                sizes="100vw"
-                className="object-cover animate-hero-zoom"
-                priority
-              />
-            </div>
-          </div>
-
-          {/* Sponsor callout — rendered inside the hero grid so mobile DOM
-              order places it directly under the main hero column (before the
-              right rail). On desktop, `lg:order-last` pushes it below the
-              hero row as a full-width band. Only present while a sponsor
-              activity is live. */}
-          {sponsorCallout && (
-            <div className="lg:col-span-12 lg:order-last">
-              <SponsorCallout callout={sponsorCallout} />
-            </div>
-          )}
-
-          {/* Departure Board rail — rec #1. AHORA strip on top, color-coded
-              stage badges, countdown chips per row, hover slide-right +
-              crimson left border. */}
-          <div className="lg:col-span-3 bg-surface-container-low p-5 sm:p-8 flex flex-col border-t lg:border-t-0 lg:border-l border-primary/10">
-            <h3 className="font-display font-black text-xl uppercase mb-6 flex items-center justify-between text-primary animate-fade-up stagger-2">
-              EN CURSO · POR VENIR
-              <Icon name="sensors" size={22} />
-            </h3>
-
-            {mainLive && (
-              <Link
-                href="/agenda?stage=main"
-                className="block mb-5 pb-5 border-b-2 border-primary/15 group animate-fade-up stagger-3"
-                aria-label={`Ahora en ${mainLive.stage === "main" ? "Main Stage" : "ambos escenarios"}: ${mainLive.title}`}
-              >
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                  <LiveDot />
-                  <span className="mono-data text-[10px] font-black tracking-widest uppercase text-secondary">
-                    AHORA
-                  </span>
-                  <StageBadge stage={mainLive.stage} />
-                </div>
-                <h4 className="font-display font-black uppercase leading-[1.05] text-primary text-xl md:text-2xl tracking-tight mb-1 group-hover:text-secondary transition-colors duration-200">
-                  {mainLive.title}
-                </h4>
-                {(mainLive.speakerName ?? mainLive.speakerOrg) && (
-                  <p className="mono-data text-[11px] text-primary/60 uppercase tracking-wide mb-3">
-                    {mainLive.speakerName ?? mainLive.speakerOrg}
-                  </p>
-                )}
-                <div className="flex items-center gap-2">
-                  <div
-                    className="flex-1 h-[3px] bg-primary/10"
-                    role="progressbar"
-                    aria-label={`Progreso de ${mainLive.title}`}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={progressPct}
-                  >
-                    <div
-                      className="bg-secondary h-full"
-                      style={{ width: `${progressPct}%` }}
-                    />
-                  </div>
-                  <span className="mono-data text-[10px] font-black text-secondary tabular-nums">
-                    {progressPct}%
-                  </span>
-                </div>
-              </Link>
-            )}
-
-            <div className="mono-data text-[10px] uppercase font-black tracking-widest text-primary/60 mb-1">
-              A CONTINUACIÓN
-            </div>
-            <div className="flex flex-col">
-              {sidebarSessions.map((session, i) => {
-                const minutesUntil = getMinutesUntilStart(
-                  session.startTime,
-                  now,
-                );
-                const href =
-                  session.stage === "escenario-2"
-                    ? "/agenda?stage=escenario-2"
-                    : session.stage === "main"
-                      ? "/agenda?stage=main"
-                      : "/agenda";
-                return (
-                  <Link
-                    key={session.id}
-                    href={href}
-                    aria-label={`Ver en agenda: ${session.title}`}
-                    className={`group relative block py-4 border-b border-primary/10 border-l-[3px] border-l-transparent pl-4 -ml-4 hover:border-l-secondary hover:translate-x-1 transition-all duration-200 cursor-pointer animate-fade-up stagger-${Math.min(i + 4, 7)}`}
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1 flex-wrap">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="mono-data text-sm font-black text-primary tabular-nums">
-                          {session.startTime}
-                        </span>
-                        <StageBadge stage={session.stage} />
-                      </div>
-                      {minutesUntil !== null && (
-                        <span className="mono-data text-[10px] uppercase tracking-wider font-bold text-secondary shrink-0">
-                          {formatCountdown(minutesUntil)}
-                        </span>
-                      )}
-                    </div>
-                    <h4 className="font-display font-bold text-sm uppercase leading-snug text-primary group-hover:text-secondary transition-colors duration-200">
-                      {session.title}
-                    </h4>
-                    <Icon
-                      name="north_east"
-                      size={14}
-                      className="absolute top-4 right-0 text-primary/0 group-hover:text-secondary transition-colors duration-200"
-                    />
-                  </Link>
-                );
-              })}
-            </div>
-
-            <div className="mt-auto pt-6 animate-fade-in stagger-6">
-              <p className="mono-data font-bold text-[11px] uppercase tracking-widest text-primary/70 border-t border-primary/15 pt-4">
-                {HERO_CONTENT.capacityLabel}
-              </p>
-            </div>
-          </div>
-        </section>
+        <HeroDuring
+          mainLive={mainLive}
+          headline={headline}
+          progressPct={progressPct}
+          nextUpSessions={nextUpSessions}
+          sponsorCallout={sponsorCallout}
+          now={now}
+        />
       )}
 
-      {/* ── PHASE: AFTER · gratitude hero ─────────────────────────────── */}
-      {phase === "after" && (
-        <section className="relative min-h-[60dvh] sm:min-h-[70dvh] lg:min-h-[85dvh] bg-primary overflow-hidden flex flex-col items-center justify-center text-center p-5 sm:p-8 md:p-12 lg:p-24 text-on-primary">
-          <div className="w-full max-w-5xl flex flex-col items-center gap-8 md:gap-12">
-            <div className="flex items-center gap-3 animate-fade-up">
-              <span className="w-2 h-2 bg-secondary" />
-              <span className="mono-data text-sm font-bold tracking-widest uppercase">
-                EDICIÓN 2026 · FINALIZADA
-              </span>
-            </div>
+      {phase === "after" && <HeroAfter totalSessions={sortedSessions.length} />}
 
-            <h1 className="text-[clamp(3rem,14vw,14rem)] leading-[0.85] font-black uppercase tracking-tighter break-words font-display animate-reveal-up stagger-1">
-              GRACIAS
-              <br />
-              <span className="text-secondary">SAN JOSÉ</span>
-            </h1>
-
-            <h2 className="text-xl sm:text-2xl md:text-4xl font-display font-bold uppercase tracking-tight max-w-3xl animate-fade-up stagger-3">
-              La transmisión del 14 de mayo cerró el telón.
-            </h2>
-
-            <div className="grid grid-cols-3 gap-0 border-y-2 border-on-primary/20 w-full max-w-3xl animate-fade-up stagger-4">
-              <div className="py-4 px-2 border-r border-on-primary/20">
-                <div className="mono-data text-[10px] uppercase tracking-widest text-on-primary/50 mb-1">
-                  Charlas
-                </div>
-                <div className="mono-data text-2xl sm:text-4xl font-black text-on-primary tracking-tighter">
-                  {sortedSessions.length}
-                </div>
-              </div>
-              <div className="py-4 px-2 border-r border-on-primary/20">
-                <div className="mono-data text-[10px] uppercase tracking-widest text-on-primary/50 mb-1">
-                  Escenarios
-                </div>
-                <div className="mono-data text-2xl sm:text-4xl font-black text-on-primary tracking-tighter">
-                  02
-                </div>
-              </div>
-              <div className="py-4 px-2">
-                <div className="mono-data text-[10px] uppercase tracking-widest text-on-primary/50 mb-1">
-                  Edición
-                </div>
-                <div className="mono-data text-2xl sm:text-4xl font-black text-on-primary tracking-tighter">
-                  2026
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-4 justify-center animate-fade-up stagger-5">
-              <Link
-                href="/agenda"
-                className="bg-secondary text-on-secondary px-6 py-3 sm:px-8 sm:py-4 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center gap-2 btn-shine hover:scale-105 transition-transform duration-200 min-h-[48px]"
-              >
-                <Icon name="north_east" size={14} /> REVIVE LA AGENDA
-              </Link>
-              <Link
-                href="/exponentes"
-                className="border-2 border-on-primary text-on-primary px-6 py-3 sm:px-8 sm:py-4 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center gap-2 hover:bg-on-primary hover:text-primary transition-colors duration-200 min-h-[48px]"
-              >
-                VER EXPONENTES
-              </Link>
-            </div>
-          </div>
-
-          <div className="absolute inset-0 z-[-1] opacity-15 mix-blend-overlay overflow-hidden">
-            <Image
-              src={HERO_CONTENT.heroImageUrl}
-              alt={HERO_CONTENT.heroImageAlt}
-              fill
-              sizes="100vw"
-              className="object-cover animate-hero-zoom"
-              priority
-            />
-          </div>
-        </section>
+      {phase === "during" && (
+        <EnParaleloSection
+          distinctParallel={distinctParallel}
+          nextParallel={nextParallel}
+          parallelProgressPct={parallelProgressPct}
+        />
       )}
-
-      {/* En Paralelo — Escenario 2 live card (rec #2). Full-width card that
-          matches the hero's vocabulary: live label + stage badge, title
-          and speaker center-left, VER AGENDA CTA right, progress band at
-          bottom. When no distinct parallel is live, shows a compact empty
-          state strip with the next esc-2 talk so the user's spatial map
-          stays intact. */}
-      {phase === "during" && (distinctParallel || nextParallel) && (
-        <section className="bg-surface text-primary px-5 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 md:py-12 border-t-4 border-primary border-b-4 border-b-secondary animate-fade-up">
-          {distinctParallel ? (
-            <>
-              <div className="flex items-center justify-between flex-wrap gap-3 mb-6 pb-4 border-b border-primary/15">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <LiveDot />
-                  <span className="mono-data text-[11px] sm:text-xs font-black tracking-widest uppercase text-secondary">
-                    {HERO_CONTENT.parallelLabel}
-                  </span>
-                  <StageBadge stage={distinctParallel.stage} />
-                </div>
-                <span className="mono-data text-sm sm:text-base font-black tracking-tighter text-primary tabular-nums">
-                  {distinctParallel.time}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-[3fr_auto] gap-6 md:gap-8 items-end">
-                <div>
-                  <h2 className="font-display font-black uppercase tracking-tight leading-[0.95] text-[clamp(1.75rem,5vw,3.5rem)] text-primary mb-3 md:mb-4">
-                    {distinctParallel.title}
-                  </h2>
-                  {(distinctParallel.speakerName ?? distinctParallel.speakerOrg) && (
-                    <p className="mono-data text-sm uppercase tracking-wider text-on-surface-variant border-l-4 border-secondary pl-4">
-                      {distinctParallel.speakerName ?? distinctParallel.speakerOrg}
-                    </p>
-                  )}
-                </div>
-                <Link
-                  href="/agenda?stage=escenario-2"
-                  className="bg-secondary text-on-secondary px-6 py-3 sm:px-8 sm:py-4 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center justify-center gap-2 btn-shine hover:scale-105 transition-transform duration-200 min-h-[48px] shrink-0"
-                >
-                  <Icon name="north_east" size={14} />
-                  VER AGENDA
-                </Link>
-              </div>
-
-              <div className="mt-6 md:mt-8">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="mono-data text-[10px] uppercase tracking-widest font-black text-on-surface-variant">
-                    PROGRESO · ESCENARIO 2
-                  </span>
-                  <span className="mono-data text-[10px] uppercase tracking-widest font-black text-secondary tabular-nums">
-                    {parallelProgressPct}%
-                  </span>
-                </div>
-                <div
-                  className="w-full bg-primary/10 h-[6px]"
-                  role="progressbar"
-                  aria-label={`Progreso de ${distinctParallel.title}`}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={parallelProgressPct}
-                >
-                  <div
-                    className="bg-secondary h-full animate-progress-fill"
-                    style={
-                      {
-                        "--progress-pct": `${parallelProgressPct}%`,
-                      } as CSSProperties
-                    }
-                  />
-                </div>
-              </div>
-            </>
-          ) : nextParallel ? (
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
-              <div className="flex items-center gap-3 flex-wrap min-w-0">
-                <span
-                  className="w-2 h-2 bg-primary/40 shrink-0"
-                  aria-hidden="true"
-                />
-                <span className="mono-data text-[11px] font-black tracking-widest uppercase text-on-surface-variant">
-                  PRÓXIMA EN ESCENARIO 2
-                </span>
-                <StageBadge stage="escenario-2" />
-                <span className="mono-data text-sm font-black tracking-tighter text-secondary tabular-nums">
-                  {nextParallel.startTime}
-                </span>
-              </div>
-              <div className="flex-1 md:mx-4 min-w-0">
-                <span className="font-display font-bold uppercase tracking-tight text-lg md:text-xl text-primary line-clamp-2">
-                  {nextParallel.title}
-                </span>
-              </div>
-              <Link
-                href="/agenda?stage=escenario-2"
-                className="border-2 border-primary text-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center gap-2 hover:bg-primary hover:text-on-primary transition-colors duration-200 min-h-[48px] shrink-0"
-              >
-                <Icon name="north_east" size={14} />
-                VER AGENDA
-              </Link>
-            </div>
-          ) : null}
-        </section>
-      )}
-
 
       {/* Chronogram / Departure Board Section — heading adapts to phase */}
       <section className="p-5 sm:p-8 md:p-12 lg:p-24 bg-surface">
@@ -832,7 +215,6 @@ export default async function EnVivoPage({
           </div>
         </div>
 
-        {/* The "Departure" List */}
         <div className="border-t-4 border-primary">
           {agendaPreview.map((session, i) => (
             <DepartureRow
@@ -866,12 +248,10 @@ export default async function EnVivoPage({
               key={item.id}
               className={`grid grid-cols-[auto_1fr] md:grid-cols-[3rem_5fr_6fr] gap-x-4 md:gap-x-8 gap-y-3 py-6 sm:py-8 md:py-10 border-b border-on-primary/15 items-start animate-fade-up stagger-${Math.min(i + 1, 7)}`}
             >
-              {/* Index — departure-board row number */}
               <div className="mono-data text-[11px] sm:text-xs uppercase tracking-widest font-bold text-secondary pt-2 md:pt-4 row-span-2 md:row-span-1">
                 {String(i + 1).padStart(2, "0")}
               </div>
 
-              {/* Hook + label */}
               <div className="min-w-0">
                 <div className="mono-data font-black uppercase tracking-tighter text-on-primary text-[clamp(1.75rem,5vw,4rem)] leading-[0.9] break-words">
                   {item.hook}
@@ -885,7 +265,6 @@ export default async function EnVivoPage({
                 </div>
               </div>
 
-              {/* Body */}
               <div className="col-start-2 md:col-start-3 md:pt-3">
                 <p className="text-on-primary/80 text-sm sm:text-base leading-relaxed max-w-prose">
                   {item.body}
@@ -899,7 +278,6 @@ export default async function EnVivoPage({
       {/* Cómo Llegar */}
       <section className="bg-surface p-5 sm:p-8 md:p-12 lg:p-24">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-4 lg:gap-2 items-stretch">
-          {/* Venue Details — title + content unified */}
           <div className="flex flex-col animate-fade-up stagger-2">
             <h2 className="text-[clamp(2.75rem,8vw,7rem)] leading-[0.85] font-black uppercase tracking-tighter text-primary font-display mb-8 animate-slide-left">
               CÓMO
@@ -966,7 +344,6 @@ export default async function EnVivoPage({
             </div>
           </div>
 
-          {/* Google Maps Embed — full column height */}
           <div className="animate-fade-up stagger-4">
             <div className="border-2 border-primary overflow-hidden w-full h-[350px] sm:h-[450px] lg:h-full lg:min-h-[600px]">
               <iframe

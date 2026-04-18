@@ -29,3 +29,11 @@ export function stageShort(stage: Stage): string {
   if (stage === "both") return "AMBOS";
   return STAGES[stage].short;
 }
+
+// Deep link into the agenda, scoped to the session's stage when applicable.
+// "both"-stage sessions (ceremonies, breaks) land on the unfiltered agenda.
+export function agendaHrefForStage(stage: Stage): string {
+  if (stage === "escenario-2") return "/agenda?stage=escenario-2";
+  if (stage === "main") return "/agenda?stage=main";
+  return "/agenda";
+}

@@ -1,5 +1,5 @@
 import type { Session } from "../data/types";
-import { stageShort } from "../data/venue";
+import StageBadge from "./StageBadge";
 import StatusBadge from "./StatusBadge";
 
 type DepartureRowProps = {
@@ -47,9 +47,7 @@ export default function DepartureRow({
         {isLive ? "AHORA" : session.startTime}
       </div>
       <div className="md:col-span-2">
-        <span className="bg-primary-fixed px-3 py-1 text-[10px] font-bold uppercase mono-data">
-          {stageShort(session.stage)}
-        </span>
+        <StageBadge stage={session.stage} size="md" />
       </div>
       <div className="md:col-span-6">
         <h5 className={titleClasses}>{session.title}</h5>

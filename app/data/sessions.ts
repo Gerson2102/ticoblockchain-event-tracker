@@ -357,6 +357,29 @@ export function getDaysUntilEvent(now: Date): number {
   return Math.max(0, Math.round((b - a) / 86_400_000));
 }
 
+// Minutes from `now` to a session's startTime on event day. Returns null
+// when the session is already past its start. CR runs UTC-6 year-round,
+// so the explicit offset is safe (same pattern used by getNextTransitionAt).
+export function getMinutesUntilStart(
+  startTime: string,
+  now: Date,
+): number | null {
+  const startMs = new Date(
+    `${VENUE.eventDateISO}T${startTime}:00-06:00`,
+  ).getTime();
+  const diffMs = startMs - now.getTime();
+  if (diffMs <= 0) return null;
+  return Math.floor(diffMs / 60000);
+}
+
+// Human-readable countdown chip: "en 12m", "en 1h", "en 1h 20m".
+export function formatCountdown(minutes: number): string {
+  if (minutes < 60) return `en ${minutes}m`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m === 0 ? `en ${h}h` : `en ${h}h ${m}m`;
+}
+
 // Fraction (0..1) of elapsed time through a session's time window, computed
 // in the event timezone. Returns null when the session has no parseable
 // range or `now` is outside the window. Drives the hero progress bar.
