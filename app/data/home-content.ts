@@ -1,5 +1,48 @@
 import type { PracticalInfoItem, VenueDirections } from "./types";
 
+// Sponsor activity callout — shown as a full-width banner below the hero
+// when a session that ties to an off-stage sponsor action is live. Keyed by
+// session id so the page can render it for whichever matching session is
+// currently "live" (works for both the main and parallel tracks).
+export type SponsorCallout = {
+  sponsorName: string;
+  activityLabel: string;
+  tagline: string;
+  description: string;
+  ctaText: string;
+  ctaUrl: string;
+};
+
+export const SPONSOR_CALLOUTS: Record<string, SponsorCallout> = {
+  "lulubit-esc2": {
+    sponsorName: "LULUBIT",
+    activityLabel: "WORKSHOP · ACTIVIDAD EN VIVO",
+    tagline: "Descargá la app Lulubit para iOS y Android",
+    description:
+      "El taller patrocinado por Lulubit está en curso. Descargá la app desde la web oficial para seguir la demo en vivo y activar tu cuenta durante la sesión.",
+    ctaText: "Descargar Lulubit",
+    ctaUrl: "https://www.lulubit.app/",
+  },
+  "coffee-break-am": {
+    sponsorName: "COFIBLOCKS",
+    activityLabel: "COFFEE BREAK AM · PRESENTADO POR COFIBLOCKS",
+    tagline: "Café costarricense, trazabilidad on-chain",
+    description:
+      "El break de media mañana es cortesía de Cofiblocks. Conocé cómo conectan caficultores locales con el mundo mediante contratos en blockchain.",
+    ctaText: "Visitar Cofiblocks",
+    ctaUrl: "https://www.cofiblocks.com/",
+  },
+  "coffee-break": {
+    sponsorName: "COFIBLOCKS",
+    activityLabel: "COFFEE BREAK PM · PRESENTADO POR COFIBLOCKS",
+    tagline: "Café costarricense, trazabilidad on-chain",
+    description:
+      "Segundo break del día, cortesía de Cofiblocks. Descubrí el proyecto que tokeniza el café latinoamericano para pagar directo al productor.",
+    ctaText: "Visitar Cofiblocks",
+    ctaUrl: "https://www.cofiblocks.com/",
+  },
+};
+
 // Home page hero — the current live talk gets the most editorial weight.
 // Driven by the live session in app/data/sessions.ts.
 export const HERO_CONTENT = {

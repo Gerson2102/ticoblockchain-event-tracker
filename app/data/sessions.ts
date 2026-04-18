@@ -278,6 +278,14 @@ export const SESSIONS: readonly Session[] = [
 // Returns sessions with each `status` replaced by a time-derived status.
 // Pre/post event day, the literal "demo" status is preserved so the site
 // can be previewed with the intended "live" hero pre-launch.
+// Static lookup by id. Used by the sponsors page to resolve a sponsor's
+// session metadata (time, stage, title) without running the live status
+// pipeline — the sponsors page is purely informational and doesn't need
+// past/live/next promotion.
+export function getSessionById(id: string): Session | undefined {
+  return SESSIONS.find((s) => s.id === id);
+}
+
 export function getSessionsAt(now: Date): Session[] {
   const statuses = computeSessionStatuses(SESSIONS, now);
   return SESSIONS.map((s) => ({

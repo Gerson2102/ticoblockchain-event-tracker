@@ -7,9 +7,11 @@ import Icon from "./components/Icon";
 import LiveDot from "./components/LiveDot";
 import LiveRefresh from "./components/LiveRefresh";
 import SessionCard from "./components/SessionCard";
+import SponsorCallout from "./components/SponsorCallout";
 import {
   HERO_CONTENT,
   PRACTICAL_INFO,
+  SPONSOR_CALLOUTS,
   VENUE_DIRECTIONS,
 } from "./data/home-content";
 import { resolveNow } from "./data/now";
@@ -86,6 +88,19 @@ export default async function EnVivoPage({
 
   const sidebarSessions = getNextSessions(3, now);
   const daysUntilEvent = getDaysUntilEvent(now);
+
+  // Match the currently live sessions against sponsor-linked activities
+  // (Lulubit workshop, Cofiblocks coffee breaks). Prefer the main live
+  // session when both tracks match, fall back to escenario-2. De-duped so
+  // a single "both"-stage session doesn't render the callout twice.
+  const sponsorCallout =
+    phase === "during"
+      ? ((mainLive && SPONSOR_CALLOUTS[mainLive.id]) ??
+          (parallelLive && parallelLive.id !== mainLive?.id
+            ? SPONSOR_CALLOUTS[parallelLive.id]
+            : undefined)) ??
+        null
+      : null;
 
   // Agenda preview anchors to the Main Stage live row. Slice ±1 around it
   // for visual continuity; fall back to the first 5 rows if nothing is live.
@@ -516,6 +531,11 @@ export default async function EnVivoPage({
           </div>
         </section>
       )}
+
+      {/* Sponsor-linked activity callout — shown when the currently live
+          session (main or parallel) is tied to an off-stage sponsor action
+          (Lulubit app download, Cofiblocks coffee break). */}
+      {sponsorCallout && <SponsorCallout callout={sponsorCallout} />}
 
       {/* En Paralelo — Escenario 2 Live Session (during only) */}
       {parallelLive && (
