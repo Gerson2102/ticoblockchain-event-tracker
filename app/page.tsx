@@ -6,7 +6,6 @@ import DevTimeBanner from "./components/DevTimeBanner";
 import Icon from "./components/Icon";
 import LiveDot from "./components/LiveDot";
 import LiveRefresh from "./components/LiveRefresh";
-import SessionCard from "./components/SessionCard";
 import SponsorCallout from "./components/SponsorCallout";
 import {
   HERO_CONTENT,
@@ -24,7 +23,7 @@ import {
   getSessionProgress,
   getSessionsAt,
 } from "./data/sessions";
-import type { Session } from "./data/types";
+import type { Session, Stage } from "./data/types";
 import { VENUE } from "./data/venue";
 
 // Dynamically rendered — the page is intentionally live and reads ?now=
@@ -60,6 +59,48 @@ function heroHeadline(session: Session | undefined): {
   if (session.speakerName) return splitSpeakerName(session.speakerName);
   if (session.speakerOrg) return { first: session.speakerOrg, last: "" };
   return { first: session.title, last: "" };
+}
+
+// Minutes from `now` to a session's startTime in event-local time. Returns
+// null when the session is already underway or past. Drives the "en 12m"
+// countdown chips on the departure-board right rail.
+function getMinutesUntilStart(startTime: string, now: Date): number | null {
+  const startMs = new Date(
+    `${VENUE.eventDateISO}T${startTime}:00-06:00`,
+  ).getTime();
+  const diffMs = startMs - now.getTime();
+  if (diffMs <= 0) return null;
+  return Math.floor(diffMs / 60000);
+}
+
+function formatCountdown(minutes: number): string {
+  if (minutes < 60) return `en ${minutes}m`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m === 0 ? `en ${h}h` : `en ${h}h ${m}m`;
+}
+
+// Compact stage chip — color carries meaning (MAIN cobalt / ESC 2 crimson /
+// AMBOS pale-cobalt), with an icon-shaped cue so it's not color-only.
+function StageBadge({ stage }: { stage: Stage }) {
+  const { bg, glyph, label } =
+    stage === "main"
+      ? { bg: "bg-primary text-on-primary", glyph: "▮", label: "MAIN" }
+      : stage === "escenario-2"
+        ? { bg: "bg-secondary text-on-secondary", glyph: "▯", label: "ESC 2" }
+        : {
+            bg: "bg-primary-fixed text-on-primary-fixed",
+            glyph: "◫",
+            label: "AMBOS",
+          };
+  return (
+    <span
+      className={`${bg} mono-data text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 inline-flex items-center gap-1 shrink-0`}
+    >
+      <span aria-hidden="true">{glyph}</span>
+      {label}
+    </span>
+  );
 }
 
 // Screen-reader announcement for the current live session. Updates whenever
@@ -102,9 +143,29 @@ export default async function EnVivoPage({
         null
       : null;
 
+  // Parallel track: only treat escenario-2 as "distinct" when it's not just
+  // a mirrored "both"-stage session already shown in the main hero — otherwise
+  // we'd render the same talk twice. Empty state falls back to the next
+  // scheduled esc-2 / both talk so the spatial map stays intact.
+  const distinctParallel =
+    parallelLive && parallelLive.id !== mainLive?.id ? parallelLive : undefined;
+  const parallelProgress = distinctParallel
+    ? getSessionProgress(distinctParallel, now)
+    : null;
+  const parallelProgressPct =
+    parallelProgress === null ? 0 : Math.round(parallelProgress * 100);
+
   // Agenda preview anchors to the Main Stage live row. Slice ±1 around it
   // for visual continuity; fall back to the first 5 rows if nothing is live.
   const sortedSessions = sortByStartTime(getSessionsAt(now));
+  const nextParallel =
+    phase === "during" && !distinctParallel
+      ? sortedSessions.find(
+          (s) =>
+            (s.stage === "escenario-2" || s.stage === "both") &&
+            (s.status === "next" || s.status === "scheduled"),
+        )
+      : undefined;
   const anchorIdx = mainLive
     ? sortedSessions.findIndex((s) => s.id === mainLive.id)
     : -1;
@@ -196,7 +257,13 @@ export default async function EnVivoPage({
               {/* Wordmark — TICO (short) over BLOCKCHAIN (long) with CHAIN
                   in crimson for the brand accent. BLOCKCHAIN at this scale
                   fills the column width; TICO stays short by design. */}
-              <h1 className="font-display font-black uppercase tracking-tighter leading-[0.88] text-[clamp(3rem,13vw,12rem)] break-words animate-reveal-up stagger-2">
+              <h1
+                style={{
+                  fontSize: "clamp(4.5rem, 11vw, 10.5rem)",
+                  letterSpacing: "clamp(-0.5rem, -0.5vw, -0.25rem)",
+                }}
+                className="font-display font-black uppercase leading-[0.88] break-words animate-reveal-up stagger-2"
+              >
                 TICO
                 <br />
                 BLOCK
@@ -270,43 +337,70 @@ export default async function EnVivoPage({
             </div>
           </div>
 
-          {/* Sidebar: preview of the first three sessions of the day. */}
+          {/* Sidebar: pre-event departure board — same dense vocabulary as
+              the during-phase rail (color-coded stage badges, crimson left
+              slide on hover, mono time chips), but no AHORA strip since
+              nothing is live yet. Shows the opening arc of the day so
+              attendees can scan the flow at a glance. */}
           <div className="lg:col-span-3 bg-surface-container-low p-5 sm:p-8 flex flex-col border-t lg:border-t-0 lg:border-l border-primary/10">
-            <h3 className="font-display font-black text-xl uppercase mb-8 flex items-center justify-between text-primary animate-fade-up stagger-2">
+            <h3 className="font-display font-black text-xl uppercase mb-1 flex items-center justify-between text-primary animate-fade-up stagger-2">
               AGENDA DEL DÍA
               <Icon name="sensors" size={22} />
             </h3>
-            <div className="space-y-1">
-              {sidebarSessions.slice(0, 2).map((session, i) => (
-                <SessionCard
-                  key={session.id}
-                  session={session}
-                  variant="light"
-                  staggerClass={`stagger-${Math.min(i + 3, 7)}`}
-                />
-              ))}
-              {sidebarSessions[2] && (
-                <SessionCard
-                  session={sidebarSessions[2]}
-                  variant="dark"
-                  staggerClass="stagger-5"
-                />
-              )}
+            <p className="mono-data text-[10px] font-bold uppercase tracking-widest text-primary/60 mb-6 animate-fade-up stagger-2">
+              14 MAYO · DOS ESCENARIOS
+            </p>
+
+            <div className="flex flex-col">
+              {sortedSessions.slice(0, 8).map((session, i) => {
+                const href =
+                  session.stage === "escenario-2"
+                    ? "/agenda?stage=escenario-2"
+                    : session.stage === "main"
+                      ? "/agenda?stage=main"
+                      : "/agenda";
+                return (
+                  <Link
+                    key={session.id}
+                    href={href}
+                    aria-label={`Ver en agenda: ${session.title}`}
+                    className={`group relative block py-3 border-b border-primary/10 border-l-[3px] border-l-transparent pl-4 -ml-4 hover:border-l-secondary hover:translate-x-1 transition-all duration-200 cursor-pointer animate-fade-up stagger-${Math.min(i + 3, 7)}`}
+                  >
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className="mono-data text-sm font-black text-primary tabular-nums">
+                        {session.startTime}
+                      </span>
+                      <StageBadge stage={session.stage} />
+                    </div>
+                    <h4 className="font-display font-bold text-sm uppercase leading-snug text-primary group-hover:text-secondary transition-colors duration-200 line-clamp-2">
+                      {session.title}
+                    </h4>
+                    <Icon
+                      name="north_east"
+                      size={14}
+                      className="absolute top-3 right-0 text-primary/0 group-hover:text-secondary transition-colors duration-200"
+                    />
+                  </Link>
+                );
+              })}
             </div>
 
-            <div className="mt-auto pt-8 animate-fade-in stagger-6">
-              <Image
-                src={HERO_CONTENT.sidebarImageUrl}
-                alt={HERO_CONTENT.sidebarImageAlt}
-                width={400}
-                height={192}
-                sizes="(min-width: 1024px) 25vw, 100vw"
-                className="w-full h-48 object-cover grayscale brightness-50 contrast-125 mb-4"
-              />
-              <p className="font-display font-bold text-xs uppercase tracking-tighter text-primary">
+            <Link
+              href="/agenda"
+              className="mt-auto pt-6 block animate-fade-in stagger-6 group/link"
+            >
+              <div className="mono-data font-black text-[11px] uppercase tracking-widest text-primary border-t border-primary/15 pt-4 flex items-center justify-between group-hover/link:text-secondary transition-colors duration-200">
+                VER AGENDA COMPLETA
+                <Icon
+                  name="north_east"
+                  size={14}
+                  className="group-hover/link:translate-x-1 transition-transform duration-200"
+                />
+              </div>
+              <p className="mono-data text-[10px] uppercase tracking-widest text-primary/50 mt-2">
                 {HERO_CONTENT.capacityLabel}
               </p>
-            </div>
+            </Link>
           </div>
         </section>
       )}
@@ -415,39 +509,118 @@ export default async function EnVivoPage({
             </div>
           </div>
 
+          {/* Sponsor callout — rendered inside the hero grid so mobile DOM
+              order places it directly under the main hero column (before the
+              right rail). On desktop, `lg:order-last` pushes it below the
+              hero row as a full-width band. Only present while a sponsor
+              activity is live. */}
+          {sponsorCallout && (
+            <div className="lg:col-span-12 lg:order-last">
+              <SponsorCallout callout={sponsorCallout} />
+            </div>
+          )}
+
+          {/* Departure Board rail — rec #1. AHORA strip on top, color-coded
+              stage badges, countdown chips per row, hover slide-right +
+              crimson left border. */}
           <div className="lg:col-span-3 bg-surface-container-low p-5 sm:p-8 flex flex-col border-t lg:border-t-0 lg:border-l border-primary/10">
-            <h3 className="font-display font-black text-xl uppercase mb-8 flex items-center justify-between text-primary animate-fade-up stagger-2">
-              PRÓXIMAS CHARLAS
+            <h3 className="font-display font-black text-xl uppercase mb-6 flex items-center justify-between text-primary animate-fade-up stagger-2">
+              EN CURSO · POR VENIR
               <Icon name="sensors" size={22} />
             </h3>
-            <div className="space-y-1">
-              {sidebarSessions.slice(0, 2).map((session, i) => (
-                <SessionCard
-                  key={session.id}
-                  session={session}
-                  variant="light"
-                  staggerClass={`stagger-${Math.min(i + 3, 7)}`}
-                />
-              ))}
-              {sidebarSessions[2] && (
-                <SessionCard
-                  session={sidebarSessions[2]}
-                  variant="dark"
-                  staggerClass="stagger-5"
-                />
-              )}
+
+            {mainLive && (
+              <Link
+                href="/agenda?stage=main"
+                className="block mb-5 pb-5 border-b-2 border-primary/15 group animate-fade-up stagger-3"
+                aria-label={`Ahora en ${mainLive.stage === "main" ? "Main Stage" : "ambos escenarios"}: ${mainLive.title}`}
+              >
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <LiveDot />
+                  <span className="mono-data text-[10px] font-black tracking-widest uppercase text-secondary">
+                    AHORA
+                  </span>
+                  <StageBadge stage={mainLive.stage} />
+                </div>
+                <h4 className="font-display font-black uppercase leading-[1.05] text-primary text-xl md:text-2xl tracking-tight mb-1 group-hover:text-secondary transition-colors duration-200">
+                  {mainLive.title}
+                </h4>
+                {(mainLive.speakerName ?? mainLive.speakerOrg) && (
+                  <p className="mono-data text-[11px] text-primary/60 uppercase tracking-wide mb-3">
+                    {mainLive.speakerName ?? mainLive.speakerOrg}
+                  </p>
+                )}
+                <div className="flex items-center gap-2">
+                  <div
+                    className="flex-1 h-[3px] bg-primary/10"
+                    role="progressbar"
+                    aria-label={`Progreso de ${mainLive.title}`}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={progressPct}
+                  >
+                    <div
+                      className="bg-secondary h-full"
+                      style={{ width: `${progressPct}%` }}
+                    />
+                  </div>
+                  <span className="mono-data text-[10px] font-black text-secondary tabular-nums">
+                    {progressPct}%
+                  </span>
+                </div>
+              </Link>
+            )}
+
+            <div className="mono-data text-[10px] uppercase font-black tracking-widest text-primary/60 mb-1">
+              A CONTINUACIÓN
+            </div>
+            <div className="flex flex-col">
+              {sidebarSessions.map((session, i) => {
+                const minutesUntil = getMinutesUntilStart(
+                  session.startTime,
+                  now,
+                );
+                const href =
+                  session.stage === "escenario-2"
+                    ? "/agenda?stage=escenario-2"
+                    : session.stage === "main"
+                      ? "/agenda?stage=main"
+                      : "/agenda";
+                return (
+                  <Link
+                    key={session.id}
+                    href={href}
+                    aria-label={`Ver en agenda: ${session.title}`}
+                    className={`group relative block py-4 border-b border-primary/10 border-l-[3px] border-l-transparent pl-4 -ml-4 hover:border-l-secondary hover:translate-x-1 transition-all duration-200 cursor-pointer animate-fade-up stagger-${Math.min(i + 4, 7)}`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1 flex-wrap">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="mono-data text-sm font-black text-primary tabular-nums">
+                          {session.startTime}
+                        </span>
+                        <StageBadge stage={session.stage} />
+                      </div>
+                      {minutesUntil !== null && (
+                        <span className="mono-data text-[10px] uppercase tracking-wider font-bold text-secondary shrink-0">
+                          {formatCountdown(minutesUntil)}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="font-display font-bold text-sm uppercase leading-snug text-primary group-hover:text-secondary transition-colors duration-200">
+                      {session.title}
+                    </h4>
+                    <Icon
+                      name="north_east"
+                      size={14}
+                      className="absolute top-4 right-0 text-primary/0 group-hover:text-secondary transition-colors duration-200"
+                    />
+                  </Link>
+                );
+              })}
             </div>
 
-            <div className="mt-auto pt-8 animate-fade-in stagger-6">
-              <Image
-                src={HERO_CONTENT.sidebarImageUrl}
-                alt={HERO_CONTENT.sidebarImageAlt}
-                width={400}
-                height={192}
-                sizes="(min-width: 1024px) 25vw, 100vw"
-                className="w-full h-48 object-cover grayscale brightness-50 contrast-125 mb-4"
-              />
-              <p className="font-display font-bold text-xs uppercase tracking-tighter text-primary">
+            <div className="mt-auto pt-6 animate-fade-in stagger-6">
+              <p className="mono-data font-bold text-[11px] uppercase tracking-widest text-primary/70 border-t border-primary/15 pt-4">
                 {HERO_CONTENT.capacityLabel}
               </p>
             </div>
@@ -532,37 +705,109 @@ export default async function EnVivoPage({
         </section>
       )}
 
-      {/* Sponsor-linked activity callout — shown when the currently live
-          session (main or parallel) is tied to an off-stage sponsor action
-          (Lulubit app download, Cofiblocks coffee break). */}
-      {sponsorCallout && <SponsorCallout callout={sponsorCallout} />}
+      {/* En Paralelo — Escenario 2 live card (rec #2). Full-width card that
+          matches the hero's vocabulary: live label + stage badge, title
+          and speaker center-left, VER AGENDA CTA right, progress band at
+          bottom. When no distinct parallel is live, shows a compact empty
+          state strip with the next esc-2 talk so the user's spatial map
+          stays intact. */}
+      {phase === "during" && (distinctParallel || nextParallel) && (
+        <section className="bg-surface text-primary px-5 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 md:py-12 border-t-4 border-primary border-b-4 border-b-secondary animate-fade-up">
+          {distinctParallel ? (
+            <>
+              <div className="flex items-center justify-between flex-wrap gap-3 mb-6 pb-4 border-b border-primary/15">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <LiveDot />
+                  <span className="mono-data text-[11px] sm:text-xs font-black tracking-widest uppercase text-secondary">
+                    {HERO_CONTENT.parallelLabel}
+                  </span>
+                  <StageBadge stage={distinctParallel.stage} />
+                </div>
+                <span className="mono-data text-sm sm:text-base font-black tracking-tighter text-primary tabular-nums">
+                  {distinctParallel.time}
+                </span>
+              </div>
 
-      {/* En Paralelo — Escenario 2 Live Session (during only) */}
-      {parallelLive && (
-        <section className="bg-surface-container-high px-5 sm:px-8 md:px-12 lg:px-24 py-10 border-t border-primary/10 border-b-4 border-b-secondary animate-fade-up">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <LiveDot />
-              <span className="mono-data text-[11px] font-bold tracking-widest uppercase text-secondary">
-                {HERO_CONTENT.parallelLabel}
-              </span>
+              <div className="grid grid-cols-1 md:grid-cols-[3fr_auto] gap-6 md:gap-8 items-end">
+                <div>
+                  <h2 className="font-display font-black uppercase tracking-tight leading-[0.95] text-[clamp(1.75rem,5vw,3.5rem)] text-primary mb-3 md:mb-4">
+                    {distinctParallel.title}
+                  </h2>
+                  {(distinctParallel.speakerName ?? distinctParallel.speakerOrg) && (
+                    <p className="mono-data text-sm uppercase tracking-wider text-on-surface-variant border-l-4 border-secondary pl-4">
+                      {distinctParallel.speakerName ?? distinctParallel.speakerOrg}
+                    </p>
+                  )}
+                </div>
+                <Link
+                  href="/agenda?stage=escenario-2"
+                  className="bg-secondary text-on-secondary px-6 py-3 sm:px-8 sm:py-4 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center justify-center gap-2 btn-shine hover:scale-105 transition-transform duration-200 min-h-[48px] shrink-0"
+                >
+                  <Icon name="north_east" size={14} />
+                  VER AGENDA
+                </Link>
+              </div>
+
+              <div className="mt-6 md:mt-8">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="mono-data text-[10px] uppercase tracking-widest font-black text-on-surface-variant">
+                    PROGRESO · ESCENARIO 2
+                  </span>
+                  <span className="mono-data text-[10px] uppercase tracking-widest font-black text-secondary tabular-nums">
+                    {parallelProgressPct}%
+                  </span>
+                </div>
+                <div
+                  className="w-full bg-primary/10 h-[6px]"
+                  role="progressbar"
+                  aria-label={`Progreso de ${distinctParallel.title}`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={parallelProgressPct}
+                >
+                  <div
+                    className="bg-secondary h-full animate-progress-fill"
+                    style={
+                      {
+                        "--progress-pct": `${parallelProgressPct}%`,
+                      } as CSSProperties
+                    }
+                  />
+                </div>
+              </div>
+            </>
+          ) : nextParallel ? (
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
+              <div className="flex items-center gap-3 flex-wrap min-w-0">
+                <span
+                  className="w-2 h-2 bg-primary/40 shrink-0"
+                  aria-hidden="true"
+                />
+                <span className="mono-data text-[11px] font-black tracking-widest uppercase text-on-surface-variant">
+                  PRÓXIMA EN ESCENARIO 2
+                </span>
+                <StageBadge stage="escenario-2" />
+                <span className="mono-data text-sm font-black tracking-tighter text-secondary tabular-nums">
+                  {nextParallel.startTime}
+                </span>
+              </div>
+              <div className="flex-1 md:mx-4 min-w-0">
+                <span className="font-display font-bold uppercase tracking-tight text-lg md:text-xl text-primary line-clamp-2">
+                  {nextParallel.title}
+                </span>
+              </div>
+              <Link
+                href="/agenda?stage=escenario-2"
+                className="border-2 border-primary text-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-xs inline-flex items-center gap-2 hover:bg-primary hover:text-on-primary transition-colors duration-200 min-h-[48px] shrink-0"
+              >
+                <Icon name="north_east" size={14} />
+                VER AGENDA
+              </Link>
             </div>
-            <div className="flex-grow md:ml-8">
-              <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tighter text-primary">
-                {parallelLive.title}
-              </h3>
-              {(parallelLive.speakerName ?? parallelLive.speakerOrg) && (
-                <p className="mono-data text-[11px] uppercase tracking-wider text-on-surface-variant mt-1">
-                  {parallelLive.speakerName ?? parallelLive.speakerOrg}
-                </p>
-              )}
-            </div>
-            <span className="mono-data text-2xl font-black text-secondary whitespace-nowrap">
-              {parallelLive.time}
-            </span>
-          </div>
+          ) : null}
         </section>
       )}
+
 
       {/* Chronogram / Departure Board Section — heading adapts to phase */}
       <section className="p-5 sm:p-8 md:p-12 lg:p-24 bg-surface">
