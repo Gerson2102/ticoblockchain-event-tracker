@@ -24,7 +24,9 @@ export type IconName =
   | "door_front"
   | "content_copy"
   | "check"
-  | "arrow_forward";
+  | "arrow_forward"
+  | "search"
+  | "my_location";
 
 // All paths use fill="currentColor" so the icon tints via CSS `color`.
 // Exported so SVG contexts (see FloorplanSVG) can render the same glyphs
@@ -67,6 +69,12 @@ export const ICON_PATHS: Record<IconName, string> = {
   check: "M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z",
   // Arrow forward.
   arrow_forward: "M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z",
+  // Magnifying glass.
+  search:
+    "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L19 20.49 20.49 19 15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z",
+  // Crosshair / radar dot — used for "jump to now".
+  my_location:
+    "M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z",
 };
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "children"> & {

@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import DevTimeBanner from "../components/DevTimeBanner";
 import Icon from "../components/Icon";
 import LiveRefresh from "../components/LiveRefresh";
-import TimelineRow from "../components/TimelineRow";
 import { resolveNow } from "../data/now";
 import { getNextTransitionAt, getSessionsAt } from "../data/sessions";
 import type { Stage } from "../data/types";
+import AgendaToolbar from "./_components/AgendaToolbar";
+import DualTrackTimeline from "./_components/DualTrackTimeline";
+import JumpToNow from "./_components/JumpToNow";
+import { groupByTimeSlot } from "./_lib/groupSessions";
 
 // Dynamically rendered — consumes ?stage and ?now search params and serves
 // time-derived session statuses on each request.
@@ -19,12 +23,6 @@ export const metadata: Metadata = {
 };
 
 type StageFilter = "todo" | "main" | "escenario-2";
-
-const FILTERS: ReadonlyArray<{ id: StageFilter; label: string }> = [
-  { id: "todo", label: "TODO" },
-  { id: "main", label: "MAIN STAGE" },
-  { id: "escenario-2", label: "ESCENARIO 2" },
-] as const;
 
 function normalizeFilter(value: string | string[] | undefined): StageFilter {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -54,6 +52,7 @@ export default async function AgendaPage({
   const filteredSessions = sortedSessions.filter((s) =>
     matchesFilter(s.stage, activeFilter),
   );
+  const slots = groupByTimeSlot(filteredSessions);
 
   return (
     <main
@@ -64,9 +63,14 @@ export default async function AgendaPage({
         nextTransitionAt={nextTransitionAt}
         simulated={simulated !== null}
       />
-      {simulated && <DevTimeBanner simulated={simulated} />}
-      {/* Hero Section Header */}
-      <section className="mb-16 border-l-8 border-primary pl-6 pt-8 animate-slide-left">
+      {simulated && (
+        <Suspense fallback={null}>
+          <DevTimeBanner simulated={simulated} />
+        </Suspense>
+      )}
+
+      {/* Hero */}
+      <section className="mb-10 border-l-8 border-primary pl-6 pt-8 animate-slide-left">
         <span className="mono-data text-secondary font-bold tracking-widest text-sm uppercase">
           Cronograma Oficial · 14 MAYO 2026
         </span>
@@ -79,125 +83,61 @@ export default async function AgendaPage({
           DE EVENTOS
         </h1>
         <p className="mt-6 text-base sm:text-xl max-w-2xl font-medium text-on-surface-variant">
-          Dos escenarios en paralelo. Main Stage y Escenario 2, sesiones de alto
-          impacto, talleres técnicos y networking de élite — todo en el Hotel
-          Barceló San José.
+          Dos escenarios en paralelo. Main Stage y Escenario 2, lado a lado —
+          una sola línea de tiempo para elegir en vivo qué charla te lleva a casa.
         </p>
       </section>
 
-      {/* Filter Chips */}
-      <section className="mb-8 animate-fade-up">
-        <div className="mono-data text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">
-          Filtrar por escenario
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {FILTERS.map((f) => {
-            const isActive = f.id === activeFilter;
-            const href = f.id === "todo" ? "/agenda" : `/agenda?stage=${f.id}`;
-            const chipClasses = [
-              "inline-flex items-center px-4 py-2 min-h-[44px] text-[11px] font-display font-bold uppercase tracking-widest border-2 transition-colors duration-200",
-              isActive
-                ? "bg-primary text-on-primary border-primary"
-                : "bg-transparent text-primary border-primary/40 hover:border-primary hover:bg-surface-container-high",
-            ].join(" ");
-            return (
-              <Link key={f.id} href={href} className={chipClasses}>
-                {f.label}
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      {/* Toolbar (client) — wrapped in Suspense because it reads useSearchParams */}
+      <Suspense fallback={<div className="mb-6 h-24 animate-pulse bg-surface-container-low" />}>
+        <AgendaToolbar totalSlots={slots.length} />
+      </Suspense>
 
-      {/* Vertical Timeline Agenda */}
-      <section className="relative overflow-hidden">
-        {/* Header for the list */}
-        <div className="hidden md:flex border-b-2 border-primary pb-4 mb-4 font-display font-bold uppercase text-xs tracking-widest opacity-50 pl-4">
-          <div className="w-32 shrink-0">Hora</div>
-          <div className="flex-grow ml-12">Sesión y Exponente</div>
-          <div className="w-52 shrink-0 text-right">Escenario</div>
-        </div>
-
-        {/* List Content */}
-        {filteredSessions.length === 0 ? (
-          <div className="border-t-2 border-primary border-b-2 py-16 px-6 text-center animate-fade-up">
-            <div className="mono-data text-[10px] uppercase tracking-widest text-secondary font-bold mb-4">
-              Sin resultados
-            </div>
-            <h3 className="font-display text-2xl sm:text-4xl font-black uppercase tracking-tighter text-primary mb-4">
-              No hay sesiones
-              <br />
-              en este escenario
-            </h3>
-            <p className="text-on-surface-variant mb-8 max-w-md mx-auto">
-              El filtro actual no coincide con ninguna charla del cronograma.
-            </p>
-            <Link
-              href="/agenda"
-              className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-xs btn-shine hover:bg-primary-container transition-colors duration-200 min-h-[48px]"
-            >
-              <Icon name="north_east" size={14} /> Ver toda la agenda
-            </Link>
-          </div>
-        ) : (
-          <div className="flex flex-col">
-            {filteredSessions.map((session, i) => (
-              <TimelineRow
-                key={session.id}
-                session={session}
-                staggerClass={`stagger-${Math.min(i + 1, 7)}`}
-                lastItem={i === filteredSessions.length - 1}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Almuerzo Callout — overlaps talks so it sits outside the chronological flow */}
-      <aside className="mt-16 bg-surface-container-highest p-6 sm:p-8 border-l-8 border-secondary animate-fade-up">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="mono-data text-[10px] uppercase tracking-widest text-secondary font-bold mb-2">
-              Almuerzo de Networking
-            </div>
-            <h3 className="font-display text-2xl sm:text-3xl font-black uppercase tracking-tighter text-primary">
-              11:00 — 13:30
-            </h3>
-            <p className="mt-2 text-on-surface-variant max-w-2xl">
-              Servicio continuo en el área de networking durante la franja de
-              Main Stage y Escenario 2. Requiere tiquete de almuerzo incluido en
-              tu registro.
-            </p>
-          </div>
-          <span className="mono-data text-xs uppercase font-bold bg-secondary text-on-secondary px-4 py-2 whitespace-nowrap">
-            Con Tiquete
+      {/* Logistics strip — lunch runs in parallel to talks (not in SESSIONS),
+          so surface it once above the schedule as context rather than a card. */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 border-l-4 border-secondary bg-surface-container-highest px-4 py-3 animate-fade-up">
+        <div className="flex items-center gap-2 shrink-0">
+          <Icon name="restaurant" size={16} className="text-secondary" />
+          <span className="mono-data text-[10px] uppercase tracking-widest font-bold text-secondary">
+            Almuerzo
+          </span>
+          <span className="mono-data text-[11px] font-bold text-primary">
+            11:00 — 13:30
           </span>
         </div>
-      </aside>
+        <p className="text-xs sm:text-sm text-on-surface-variant">
+          Servicio continuo en el área de networking. Requiere tiquete incluido
+          en tu registro.
+        </p>
+      </div>
 
-      {/* Venue Info */}
-      <aside className="mt-24">
-        <div className="bg-surface-container-highest p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-2 border-primary">
-          <div>
-            <h3 className="font-display text-2xl font-bold uppercase mb-4 text-primary">
-              Información de Sede
-            </h3>
-            <p className="text-on-surface-variant">
-              Hotel Barceló San José Palacio. Ubicado estratégicamente cerca del
-              centro de la capital.
-            </p>
+      {/* Dual-track timeline */}
+      {slots.length === 0 ? (
+        <div className="border-t-2 border-primary border-b-2 py-16 px-6 text-center animate-fade-up">
+          <div className="mono-data text-[10px] uppercase tracking-widest text-secondary font-bold mb-4">
+            Sin resultados
           </div>
-          <div className="shrink-0">
-            <Link
-              href="/mapa"
-              className="inline-flex items-center gap-2 font-display font-bold uppercase border-b-2 border-primary pb-1 hover:text-secondary hover:border-secondary transition-all text-primary"
-            >
-              Ver Mapa Completo
-              <Icon name="north_east" size={20} />
-            </Link>
-          </div>
+          <h3 className="font-display text-2xl sm:text-4xl font-black uppercase tracking-tighter text-primary mb-4">
+            No hay sesiones
+            <br />
+            en este escenario
+          </h3>
+          <p className="text-on-surface-variant mb-8 max-w-md mx-auto">
+            El filtro actual no coincide con ninguna charla del cronograma.
+          </p>
+          <Link
+            href="/agenda"
+            className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-xs btn-shine hover:bg-primary-container transition-colors duration-200 min-h-[48px]"
+          >
+            <Icon name="north_east" size={14} /> Ver toda la agenda
+          </Link>
         </div>
-      </aside>
+      ) : (
+        <DualTrackTimeline slots={slots} stageFilter={activeFilter} />
+      )}
+
+      {/* Floating jump-to-now (client) */}
+      <JumpToNow />
     </main>
   );
 }

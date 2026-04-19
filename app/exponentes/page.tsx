@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import StatusBadge from "../components/StatusBadge";
 import { SPEAKERS } from "../data/speakers";
-import { stageLabel } from "../data/venue";
+import SpeakerCard from "./_components/SpeakerCard";
+import { groupAppearances } from "./_lib/groupSpeakers";
 
 export const metadata: Metadata = {
   title: "Exponentes",
@@ -11,102 +10,58 @@ export const metadata: Metadata = {
 };
 
 export default function ExponentesPage() {
+  const appearances = groupAppearances(SPEAKERS);
+  const totalSpeakers = SPEAKERS.length;
+  const panelCount = appearances.filter((a) => a.kind === "panel").length;
+
   return (
-    <main id="main" className="pb-20">
-      {/* Hero Section */}
-      <section className="px-4 sm:px-6 mb-16 border-b-2 border-primary pb-8 pt-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <h1
-            aria-label="Exponentes 2026"
-            className="text-[10vw] md:text-[6vw] leading-[0.85] font-black uppercase font-display tracking-tighter text-primary animate-reveal-up"
-          >
-            EXPONENTES
-            <br />
-            <span className="text-secondary">2026</span>
-          </h1>
-          <div className="max-w-md mb-4 animate-fade-up stagger-3">
-            <p className="mono-data text-xs uppercase tracking-widest text-on-surface-variant mb-2">
-              ORDENADO POR PRÓXIMA APARICIÓN
-            </p>
-            <p className="text-primary font-medium leading-tight">
-              La vanguardia del desarrollo blockchain en Latinoamérica. Mentes
-              críticas, código puro y visión soberana.
-            </p>
-          </div>
+    <main id="main" className="pb-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto w-full">
+      {/* Hero */}
+      <section className="mb-10 border-l-8 border-primary pl-6 pt-8 animate-slide-left">
+        <span className="mono-data text-secondary font-bold tracking-widest text-sm uppercase">
+          Cartelera Oficial · 14 MAYO 2026
+        </span>
+        <h1
+          aria-label="Exponentes 2026"
+          className="text-4xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mt-2 font-display text-primary"
+        >
+          EXPONENTES
+          <br />
+          <span className="text-secondary">2026</span>
+        </h1>
+        <div className="mt-6 flex flex-wrap items-center gap-3 mono-data text-[10px] uppercase tracking-widest font-bold">
+          <span className="bg-primary text-on-primary px-3 py-1">
+            {totalSpeakers} voces
+          </span>
+          <span className="bg-surface-container-highest text-primary px-3 py-1">
+            {panelCount} paneles
+          </span>
+          <span className="bg-surface-container-highest text-primary px-3 py-1">
+            2 escenarios
+          </span>
         </div>
+        <p className="mt-5 text-base sm:text-lg max-w-2xl font-medium text-on-surface-variant">
+          Las personas que van a tomar el micrófono el 14 de mayo. Ordenadas por
+          próxima aparición.
+        </p>
       </section>
 
-      {/* Speakers Editorial Index */}
-      <section className="px-0">
-        {/* Table Header */}
-        <div className="px-4 sm:px-6 grid grid-cols-12 gap-4 pb-4 border-b border-outline-variant items-center opacity-50 hidden md:grid animate-fade-in stagger-2">
-          <div className="col-span-1 mono-data text-[10px] uppercase tracking-widest">
-            Estado
-          </div>
-          <div className="col-span-5 mono-data text-[10px] uppercase tracking-widest">
-            Exponente
-          </div>
-          <div className="col-span-4 mono-data text-[10px] uppercase tracking-widest">
-            Charla
-          </div>
-          <div className="col-span-2 mono-data text-[10px] uppercase tracking-widest text-right">
-            Horario
-          </div>
-        </div>
-
-        {/* Speaker Rows */}
-        {SPEAKERS.map((speaker, index) => (
-          <div
-            key={speaker.id}
-            className={`px-4 sm:px-6 py-10 border-b border-outline-variant animate-fade-up stagger-${Math.min(index + 2, 7)}`}
-          >
-            <div className="grid grid-cols-12 gap-2 sm:gap-4 items-center">
-              <div className="col-span-12 md:col-span-1 mb-4 md:mb-0">
-                <StatusBadge status={speaker.status} />
-              </div>
-              <div className="col-span-12 md:col-span-5 flex items-center gap-4 sm:gap-6">
-                <div
-                  className={`w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 flex-shrink-0 relative overflow-hidden rounded-full ring-2 ring-primary/10 ${
-                    speaker.monochrome ? "grayscale" : ""
-                  }`}
-                >
-                  <Image
-                    src={speaker.imageUrl}
-                    alt={speaker.name}
-                    fill
-                    unoptimized={!speaker.imageUrl.startsWith("/")}
-                    quality={90}
-                    sizes="(min-width: 768px) 128px, (min-width: 640px) 96px, 80px"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-black font-display tracking-tighter uppercase leading-none text-primary break-words">
-                    {speaker.name}
-                  </h2>
-                  <p className="mono-data text-xs uppercase text-on-primary-container mt-1">
-                    {speaker.org}
-                  </p>
-                </div>
-              </div>
-              <div className="col-span-12 md:col-span-4">
-                <h3 className="text-base sm:text-lg md:text-xl font-bold leading-tight max-w-sm uppercase text-primary">
-                  {speaker.talk}
-                </h3>
-              </div>
-              <div className="col-span-12 md:col-span-2 text-left md:text-right">
-                <p className="mono-data text-lg sm:text-2xl font-bold tracking-tighter text-primary">
-                  {speaker.time}
-                </p>
-                <p className="mono-data text-[10px] uppercase opacity-60">
-                  {stageLabel(speaker.stage)}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </section>
-
+      {/* Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        {appearances.map((appearance, i) => {
+          const key =
+            appearance.kind === "solo"
+              ? appearance.speaker.id
+              : appearance.speakers.map((s) => s.id).join("+");
+          return (
+            <SpeakerCard
+              key={key}
+              appearance={appearance}
+              staggerClass={`stagger-${Math.min(i + 1, 7)}`}
+            />
+          );
+        })}
+      </div>
     </main>
   );
 }
