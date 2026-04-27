@@ -93,9 +93,9 @@ export const PRACTICAL_INFO: readonly PracticalInfoItem[] = [
   },
   {
     id: "contact",
-    hook: "Naranja",
+    hook: "Negro",
     label: "Staff · Soporte",
-    body: "Equipo identificado con gafete naranja en lobby y ambos escenarios. Soporte logístico y técnico durante todo el día.",
+    body: "Equipo identificado con camiseta negra en lobby y ambos escenarios. Soporte logístico y técnico durante todo el día.",
   },
 ] as const;
 

@@ -17,7 +17,7 @@ export type Zone = {
   bbox: BBox;
 };
 
-export type GrecoFeatureKind =
+type GrecoFeatureKind =
   | "stage"
   | "mesas-regalo"
   | "sonido"
@@ -38,7 +38,7 @@ export type GrecoFeature = {
   iconName?: IconName;
 };
 
-export type StandNumber = 1 | 2 | 3 | 4 | 5;
+type StandNumber = 1 | 2 | 3 | 4 | 5;
 
 export type Stand = {
   id: `stand-${StandNumber}`;

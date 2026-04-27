@@ -4,7 +4,7 @@
 // In production the override is ignored — no one should be able to spoof
 // the clock on a public live-event page.
 
-export type ResolvedNow = {
+type ResolvedNow = {
   now: Date;
   simulated: string | null; // ISO string if override active, else null
 };

@@ -3,15 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NAV_LINKS, type NavLink } from "../lib/nav-links";
 import Icon from "./Icon";
-
-const navLinks = [
-  { href: "/", label: "EN VIVO" },
-  { href: "/agenda", label: "AGENDA" },
-  { href: "/exponentes", label: "EXPONENTES" },
-  { href: "/mapa", label: "MAPA" },
-  { href: "/sponsors", label: "SPONSORS" },
-];
 
 // Nav height is a three-site contract — Tailwind v4 JIT needs static class
 // strings, so the raw `72px` is duplicated across the call sites below.
@@ -71,7 +64,7 @@ export default function NavBar() {
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  function isActive(link: (typeof navLinks)[number]) {
+  function isActive(link: NavLink) {
     if (link.href === "/") return pathname === "/";
     return pathname.startsWith(link.href);
   }
@@ -92,7 +85,7 @@ export default function NavBar() {
         </Link>
 
         <div className="hidden md:flex gap-8 items-center">
-          {navLinks.map((link) => (
+          {NAV_LINKS.map((link) => (
             <Link
               key={link.href + link.label}
               href={link.href}
@@ -137,7 +130,7 @@ export default function NavBar() {
           ref={menuRef}
           className="md:hidden flex flex-col border-t-2 border-primary bg-surface animate-menu-slide-down relative z-50"
         >
-          {navLinks.map((link) => {
+          {NAV_LINKS.map((link) => {
             const base =
               "px-6 py-4 min-h-[48px] flex items-center border-b border-primary/10 font-display uppercase tracking-tight text-sm";
             const variant = isActive(link)

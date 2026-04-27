@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { NAV_LINKS } from "./lib/nav-links";
 
 export const metadata: Metadata = {
   title: "404 · Página no encontrada",
   description:
     "La página que buscas no existe en el sitio oficial de TicoBlockchain 2026.",
 };
-
-const QUICK_LINKS = [
-  { href: "/", label: "EN VIVO" },
-  { href: "/agenda", label: "AGENDA" },
-  { href: "/exponentes", label: "EXPONENTES" },
-  { href: "/mapa", label: "MAPA" },
-  { href: "/sponsors", label: "SPONSORS" },
-] as const;
 
 export default function NotFound() {
   return (
@@ -39,7 +32,7 @@ export default function NotFound() {
 
       <section className="mt-16 border-t-4 border-primary">
         <ul className="flex flex-col divide-y divide-primary/10">
-          {QUICK_LINKS.map((link, index) => (
+          {NAV_LINKS.map((link, index) => (
             <li key={link.href}>
               <Link
                 href={link.href}

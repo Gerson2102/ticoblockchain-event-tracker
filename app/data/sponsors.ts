@@ -183,7 +183,8 @@ export const SPONSORS: readonly Sponsor[] = [
     name: "LNet",
     tier: "aliados",
     logoUrl: `${CDN}/69ac3f68a3d0a89362e42e04_lnet.png`,
-    sessionIds: ["lnet-credenciales-esc2"],
+    contribution:
+      "Aliado regional — credenciales verificables y Web3 para agronegocios.",
   },
   {
     id: "hallos",
