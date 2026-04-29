@@ -213,9 +213,9 @@ function ContainerOutline() {
       {/* Zone labels — top-left corner of each area */}
       <text
         x={greco.x + 16}
-        y={greco.y + 28}
+        y={greco.y + 32}
         className="font-display"
-        fontSize={18}
+        fontSize={26}
         fontWeight={700}
         letterSpacing="0.08em"
         fill="var(--color-primary)"
@@ -224,9 +224,9 @@ function ContainerOutline() {
       </text>
       <text
         x={lobby.x + 16}
-        y={lobby.y + 32}
+        y={lobby.y + 36}
         className="font-display"
-        fontSize={18}
+        fontSize={26}
         fontWeight={700}
         letterSpacing="0.08em"
         fill="var(--color-primary)"
@@ -235,9 +235,9 @@ function ContainerOutline() {
       </text>
       <text
         x={esc2.x + 16}
-        y={esc2.y + 32}
+        y={esc2.y + 36}
         className="font-display"
-        fontSize={18}
+        fontSize={26}
         fontWeight={700}
         letterSpacing="0.08em"
         fill="var(--color-primary)"
@@ -397,11 +397,11 @@ function ExteriorBlock({
       />
       <text
         x={cx}
-        y={cy + 36}
+        y={cy + 32}
         className="font-display"
-        fontSize={20}
+        fontSize={22}
         fontWeight={900}
-        letterSpacing="0.12em"
+        letterSpacing="0.08em"
         textAnchor="middle"
         dominantBaseline="middle"
         fill="var(--color-primary)"
@@ -503,22 +503,6 @@ function WalkingPath() {
           reads as continuous in all four directions. */}
       <line x1={laneCenterX} y1={y + 8} x2={laneCenterX} y2={laneBottom - 8} {...spineStroke} />
       <line x1={BUILDING_RIGHT_X + 8} y1={PATH_TO_ENTRANCE_Y} x2={laneCenterX} y2={PATH_TO_ENTRANCE_Y} {...spineStroke} />
-
-      {/* Subtle label along the lane so the symbol is decoded at a glance */}
-      <text
-        x={laneRight + 8}
-        y={y + height / 2}
-        className="font-display"
-        fontSize={11}
-        fontWeight={700}
-        letterSpacing="0.18em"
-        textAnchor="start"
-        dominantBaseline="middle"
-        fill="var(--color-primary)"
-        transform={`rotate(90 ${laneRight + 8} ${y + height / 2})`}
-      >
-        ACCESO PEATONAL
-      </text>
     </g>
   );
 }
@@ -659,10 +643,10 @@ function GrecoFeatureShape({
 
   // check-in strips are only 30px tall — stack icon+text horizontally instead of vertically.
   const horizontalLayout = kind === "check-in";
-  const labelFontSize = kind === "stage" ? 20 : 13;
-  const iconSize = kind === "stage" ? 28 : horizontalLayout ? 16 : 22;
-  const iconOffsetY = kind === "stage" ? 18 : 14;
-  const labelOffsetY = kind === "stage" ? 16 : 13;
+  const labelFontSize = kind === "stage" ? 22 : horizontalLayout ? 14 : 15;
+  const iconSize = kind === "stage" ? 28 : horizontalLayout ? 18 : 26;
+  const iconOffsetY = kind === "stage" ? 22 : 20;
+  const labelOffsetY = kind === "stage" ? 18 : 17;
 
   return (
     <InteractiveShape
@@ -730,15 +714,15 @@ function StandShape({
       <POIIcon
         iconName="storefront"
         cx={cx}
-        cy={cy - 12}
-        size={16}
+        cy={cy - 13}
+        size={22}
         fill="var(--color-primary)"
       />
       <text
         x={cx}
-        y={cy + 12}
+        y={cy + 14}
         className="font-display"
-        fontSize={18}
+        fontSize={26}
         fontWeight={900}
         textAnchor="middle"
         dominantBaseline="middle"
@@ -781,12 +765,12 @@ function LobbyPOIShape({
       ariaLabel={label}
       {...handlers}
     >
-      <POIIcon iconName={iconName} cx={cx} cy={cy - 12} fill={textFill} />
+      <POIIcon iconName={iconName} cx={cx} cy={cy - 14} size={28} fill={textFill} />
       <text
         x={cx}
-        y={cy + 18}
+        y={cy + 19}
         className="font-display"
-        fontSize={11}
+        fontSize={14}
         fontWeight={700}
         letterSpacing="0.05em"
         textAnchor="middle"
