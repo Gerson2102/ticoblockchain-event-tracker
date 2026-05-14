@@ -40,7 +40,7 @@ describe("computeSessionStatuses — event day", () => {
     expect(statuses.get("coffee-break-am")).toBe("next");
     // Esc-2 pass then looks for the next scheduled matching (esc-2 OR both) —
     // the coffee break is already "next" so it's excluded, falling through to
-    // Olanzo (10:55). This is by design: each stage gets its own "next" marker.
+    // Olanzo (10:50). This is by design: each stage gets its own "next" marker.
     expect(statuses.get("olanzo-esc2")).toBe("next");
     // Perspectivas is main-only and later than the coffee break — still plain scheduled.
     expect(statuses.get("perspectivas-inversion-main")).toBe("scheduled");
@@ -62,7 +62,7 @@ describe("computeSessionStatuses — event day", () => {
   test("at 10:35 — morning coffee break is live on both stages", () => {
     const statuses = computeSessionStatuses(SESSIONS, crDate("10:35"));
     expect(statuses.get("coffee-break-am")).toBe("live");
-    // Perspectivas (main) and Olanzo (esc-2) start at 10:55 → both promoted to "next".
+    // Perspectivas (main) and Olanzo (esc-2) start at 10:50 → both promoted to "next".
     expect(statuses.get("perspectivas-inversion-main")).toBe("next");
     expect(statuses.get("olanzo-esc2")).toBe("next");
   });

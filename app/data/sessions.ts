@@ -4,7 +4,7 @@ import type { Session } from "./types";
 // Two parallel tracks: Main Stage + Escenario 2.
 // Ceremonies / breaks use stage="both" (single row spanning both tracks).
 // Parallel sessions appear as two rows sharing the same startTime.
-// Source of truth: DISTRIBUCIÓN VOLUNTARIOS TB2026.xlsx · sheet "AGENDA".
+// Source of truth: "Control TAREAS TB 2026 - AGENDA.pdf" (client master sheet).
 // Initial demo state has WINK (Main) and Nimiq (Escenario 2) live at 10:00.
 export const SESSIONS: readonly Session[] = [
   {
@@ -79,8 +79,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "perspectivas-inversion-main",
-    time: "10:55 — 11:35",
-    startTime: "10:55",
+    time: "10:50 — 11:30",
+    startTime: "10:50",
     title: "Perspectivas de Inversión 2026: Retos y Oportunidades",
     description:
       "Panel sobre qué está mirando el capital fintech y blockchain para 2026: enfoques, retos actuales y qué países concentran el interés regional — y dónde se posiciona Costa Rica.",
@@ -90,9 +90,9 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "olanzo-esc2",
-    time: "10:55 — 11:20",
-    startTime: "10:55",
-    title: "El Cliente Fantasma y el Arte de Reconocerlo",
+    time: "10:50 — 11:15",
+    startTime: "10:50",
+    title: "El Cliente Fantasma y el Arte de Reconectar",
     speakerName: "Niklas Lind",
     speakerOrg: "Country Manager @ Olanzo",
     stage: "escenario-2",
@@ -111,15 +111,6 @@ export const SESSIONS: readonly Session[] = [
     status: "scheduled",
   },
   {
-    id: "lunch-break-main",
-    time: "11:30 — 12:30",
-    startTime: "11:30",
-    title: "Lunch Break — Brazalete ROSA",
-    stage: "both",
-    category: "break",
-    status: "scheduled",
-  },
-  {
     id: "fintech-for-good-main",
     time: "11:35 — 11:55",
     startTime: "11:35",
@@ -131,15 +122,15 @@ export const SESSIONS: readonly Session[] = [
     status: "scheduled",
   },
   {
-    id: "startup-pitch-1-esc2",
-    time: "11:55 — 12:30",
+    id: "sebastian-stellar-esc2",
+    time: "11:55 — 12:15",
     startTime: "11:55",
-    title: "Startup Pitch Session — Parte 1: Proyectos / Start Ups",
-    speakerOrg: "ZEEK",
-    description:
-      "Rondas rápidas de pitches de startups cripto y fintech de la región frente a un jurado de inversionistas.",
+    title:
+      "De Costa Rica al mundo: cómo Stellar está creando oportunidades reales en LATAM",
+    speakerName: "Sebastián Ceciliano",
+    speakerOrg: "Head of Growth & Community Builder @ Zeek",
     stage: "escenario-2",
-    category: "pitch",
+    category: "workshop",
     status: "scheduled",
   },
   {
@@ -155,12 +146,15 @@ export const SESSIONS: readonly Session[] = [
     status: "scheduled",
   },
   {
-    id: "lunch-break-esc2",
-    time: "12:30 — 13:30",
-    startTime: "12:30",
-    title: "Lunch Break — Brazalete AZUL",
-    stage: "both",
-    category: "break",
+    id: "startup-pitch-1-esc2",
+    time: "12:15 — 12:50",
+    startTime: "12:15",
+    title: "Startup Pitch Session — Parte 1: Proyectos / Start Ups",
+    speakerOrg: "ZEEK",
+    description:
+      "Rondas rápidas de pitches de startups cripto y fintech de la región frente a un jurado de inversionistas.",
+    stage: "escenario-2",
+    category: "pitch",
     status: "scheduled",
   },
   {
@@ -175,24 +169,34 @@ export const SESSIONS: readonly Session[] = [
     status: "scheduled",
   },
   {
-    id: "del-codigo-a-la-ley-main",
+    id: "aml-cft-geraldine-main",
     time: "12:50 — 13:10",
     startTime: "12:50",
-    title: "Del Código a la Ley: Web3 y la Ley de Activos Digitales",
-    speakerName: "Stephanie Sánchez",
-    speakerOrg: "Miss Crypto Lawyer",
+    title:
+      "La evolución de las expectativas de cumplimiento en prevención de lavado de dinero y financiamiento al terrorismo para activos digitales y VASPs",
+    speakerName: "Geraldine Pacheco Field",
+    speakerOrg: "Chainalysis",
     stage: "main",
     category: "talk",
     status: "scheduled",
   },
   {
-    id: "sebastian-stellar-main",
+    id: "lunch-break-esc2",
+    time: "12:50 — 13:30",
+    startTime: "12:50",
+    title: "Lunch Break",
+    stage: "escenario-2",
+    category: "break",
+    status: "scheduled",
+  },
+  {
+    id: "del-codigo-a-la-ley-main",
     time: "13:15 — 13:35",
     startTime: "13:15",
     title:
-      "De Costa Rica al mundo: cómo Stellar está creando oportunidades reales en LATAM",
-    speakerName: "Sebastián Ceciliano",
-    speakerOrg: "Head of Growth & Community Builder @ Zeek",
+      "Del Código a la Ley: Web3 y Ley de Activos Digitales y Blockchain como Herramienta Anticorrupción en Costa Rica",
+    speakerName: "Stephanie Sánchez",
+    speakerOrg: "Miss Crypto Lawyer",
     stage: "main",
     category: "talk",
     status: "scheduled",
@@ -211,17 +215,6 @@ export const SESSIONS: readonly Session[] = [
     status: "scheduled",
   },
   {
-    id: "charla-citi-main",
-    time: "14:25 — 14:45",
-    startTime: "14:25",
-    title: "Innovaciones en digital assets y tokenización de pagos",
-    speakerName: "Carolina Mariño",
-    speakerOrg: "Citi",
-    stage: "main",
-    category: "talk",
-    status: "scheduled",
-  },
-  {
     id: "startup-pitch-2-esc2",
     time: "14:20 — 14:50",
     startTime: "14:20",
@@ -232,6 +225,17 @@ export const SESSIONS: readonly Session[] = [
       "Segunda ronda de pitches enfocada en problemas a resolver con Morpho Studio.",
     stage: "escenario-2",
     category: "pitch",
+    status: "scheduled",
+  },
+  {
+    id: "charla-citi-main",
+    time: "14:25 — 14:45",
+    startTime: "14:25",
+    title: "Innovaciones en digital assets y tokenización de pagos",
+    speakerName: "Carolina Mariño",
+    speakerOrg: "Citi",
+    stage: "main",
+    category: "talk",
     status: "scheduled",
   },
   {
@@ -297,7 +301,7 @@ export const SESSIONS: readonly Session[] = [
     time: "16:00 — 16:25",
     startTime: "16:00",
     title: "SMART CITIES — Artemis",
-    // TODO: client to assign a speaker — image marks this slot as "Falta" (TBD).
+    speakerName: "Max Xiques",
     speakerOrg: "Artemis",
     stage: "escenario-2",
     category: "workshop",

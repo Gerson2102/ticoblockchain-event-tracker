@@ -52,13 +52,13 @@ export const SPEAKERS: readonly Speaker[] = [
     linkedinUrl: "https://www.linkedin.com/in/ricardo-barquero/",
   },
 
-  // ─── 10:55 — Perspectivas de Inversión 2026 (panel main) ───
+  // ─── 10:50 — Perspectivas de Inversión 2026 (panel main) ───
   {
     id: "karla-cordoba-brenes",
     name: "Karla Córdoba Brenes",
     org: "Presidenta @ AsoBlockchain",
     talk: "Perspectivas de Inversión 2026 (Moderadora)",
-    time: "10:55 — 11:35",
+    time: "10:50 — 11:30",
     stage: "main",
     status: "next",
     imageUrl: `${CDN}/675c37edeca90d4c739eee46_KarlaC_JTS-22%20(p).avif`,
@@ -69,7 +69,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Walter Montes",
     org: "Angel Investor · Engineering Director @ Octus",
     talk: "Perspectivas de Inversión 2026 (Panel)",
-    time: "10:55 — 11:35",
+    time: "10:50 — 11:30",
     stage: "main",
     status: "next",
     imageUrl: `${CDN}/69dfe2458c10e3dbe5207908_Walter%20Montes.png`,
@@ -80,7 +80,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Carlo Blasio",
     org: "Venture Capital @ InstaCredit",
     talk: "Perspectivas de Inversión 2026 (Panel)",
-    time: "10:55 — 11:35",
+    time: "10:50 — 11:30",
     stage: "main",
     status: "next",
     imageUrl: `${CDN}/69f62adf06eece1d1ee43884_c%20arlos.png`,
@@ -91,7 +91,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Ileana Atán Chan",
     org: "General Manager @ BN Fondos",
     talk: "Perspectivas de Inversión 2026 (Panel)",
-    time: "10:55 — 11:35",
+    time: "10:50 — 11:30",
     stage: "main",
     status: "next",
     imageUrl: `${CDN}/69fccea6166af72c5f9f49eb_Screenshot%20(8).png`,
@@ -103,7 +103,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "José Miguel Alfaro",
     org: "Partner @ iitos",
     talk: "Perspectivas de Inversión 2026 (Panel)",
-    time: "10:55 — 11:35",
+    time: "10:50 — 11:30",
     stage: "main",
     status: "next",
     imageUrl: `${CDN}/69f62fb27621c1fce04b1453_Jos%C3%A9%20Miguel%20Alfaro.png`,
@@ -111,13 +111,13 @@ export const SPEAKERS: readonly Speaker[] = [
       "https://cr.linkedin.com/in/jos%C3%A9-miguel-alfaro-g%C3%B3mez-6a491529",
   },
 
-  // ─── 10:55 — Olanzo (esc-2) ───
+  // ─── 10:50 — Olanzo (esc-2) ───
   {
     id: "niklas-lind",
     name: "Niklas Lind",
     org: "Country Manager @ Olanzo · COO @ Mayanor Ventures",
-    talk: "El Cliente Fantasma y el Arte de Reconocerlo",
-    time: "10:55 — 11:20",
+    talk: "El Cliente Fantasma y el Arte de Reconectar",
+    time: "10:50 — 11:15",
     stage: "escenario-2",
     status: "scheduled",
     imageUrl: `${CDN}/69fe73f37e61f3fbffeb1fc7_Screenshot555.png`,
@@ -149,6 +149,20 @@ export const SPEAKERS: readonly Speaker[] = [
     imageUrl: `${CDN}/69dfdfe396fe7ef28d86f859_Steven%20Cabrera.jpeg`,
   },
 
+  // ─── 11:55 — Stellar / LATAM (esc-2) ───
+  {
+    id: "sebastian-ceciliano",
+    name: "Sebastián Ceciliano",
+    org: "Head of Growth & Community Builder @ Zeek",
+    talk:
+      "De Costa Rica al mundo: cómo Stellar está creando oportunidades reales en LATAM",
+    time: "11:55 — 12:15",
+    stage: "escenario-2",
+    status: "scheduled",
+    imageUrl: `${CDN}/6a02151165ad69ecfb2f216c_Sebasti%C3%A1n%20Ceciliano.jpg.jpeg`,
+    linkedinUrl: "https://www.linkedin.com/in/cbiux/",
+  },
+
   // ─── 12:00 — Autorregulación y Gobernanza (main) ───
   {
     id: "daniela-avendano",
@@ -177,32 +191,32 @@ export const SPEAKERS: readonly Speaker[] = [
     linkedinUrl: "https://www.linkedin.com/in/andyguzmantoledo/",
   },
 
-  // ─── 12:50 — Del Código a la Ley ───
+  // ─── 12:50 — AML/CFT (Chainalysis) ───
+  {
+    id: "geraldine-pacheco",
+    name: "Geraldine Pacheco Field",
+    org: "Enterprise Account Executive LatAm @ Chainalysis",
+    talk:
+      "La evolución de las expectativas de cumplimiento AML/CFT en activos digitales y VASPs",
+    time: "12:50 — 13:10",
+    stage: "main",
+    status: "scheduled",
+    imageUrl: `${CDN}/6a049d0d4f4d740be4d3e507_Geraldine%20Pacheco%20Field.png`,
+    linkedinUrl: "https://www.linkedin.com/in/geraldinebizdev/",
+  },
+
+  // ─── 13:15 — Del Código a la Ley ───
   {
     id: "stephanie-sanchez",
     name: "Stephanie Sánchez",
     org: "Miss Crypto Lawyer · Embajadora Oficial TicoBlockchain",
     talk: "Del Código a la Ley: Web3 y la Ley de Activos Digitales",
-    time: "12:50 — 13:10",
+    time: "13:15 — 13:35",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/67dd4ba9bd7e331b594ea0bf_Screenshot4.avif`,
     linkedinUrl:
       "https://www.linkedin.com/in/stephanie-s%C3%A1nchez-misscryptolawyer-b512aa14b/",
-  },
-
-  // ─── 13:15 — Sebastián Ceciliano (Stellar / LATAM) ───
-  {
-    id: "sebastian-ceciliano",
-    name: "Sebastián Ceciliano",
-    org: "Head of Growth & Community Builder @ Zeek",
-    talk:
-      "De Costa Rica al mundo: cómo Stellar está creando oportunidades reales en LATAM",
-    time: "13:15 — 13:35",
-    stage: "main",
-    status: "scheduled",
-    imageUrl: `${CDN}/6a02151165ad69ecfb2f216c_Sebasti%C3%A1n%20Ceciliano.jpg.jpeg`,
-    linkedinUrl: "https://www.linkedin.com/in/cbiux/",
   },
 
   // ─── 13:40 — Keynote Sovra (Anti-corrupción) ───
@@ -421,7 +435,7 @@ export const SPEAKERS: readonly Speaker[] = [
 
   // ─── 17:30 — TicoBlockchain y CRTW (closing panel main) ───
   // Karla and José Miguel Zamora are duplicated entries: each is already
-  // anchored to an earlier panel (Karla → 10:55 Perspectivas, JM Zamora →
+  // anchored to an earlier panel (Karla → 10:50 Perspectivas, JM Zamora →
   // 16:45 Ecosistema Fintech en LatAm Moderador), and we keep a second
   // entry here so the CRTW session's panelist roster stays accurate in
   // this file. The `expandAppearances` pass in
@@ -523,16 +537,5 @@ export const SPEAKERS: readonly Speaker[] = [
     status: "scheduled",
     imageUrl: `${CDN}/67d029a93702b2c591a8ce34_Randall%20Barquero%202025.avif`,
     linkedinUrl: "https://linkedin.com/in/randall-barquero",
-  },
-  {
-    id: "geraldine-pacheco",
-    name: "Geraldine Pacheco",
-    org: "Enterprise Account Executive LatAm @ Chainalysis",
-    talk: "Cumplimiento AML/CFT en Activos Digitales",
-    time: "Por anunciar",
-    stage: "main",
-    status: "scheduled",
-    imageUrl: "/images/speakers/geraldine-pacheco.webp",
-    linkedinUrl: "https://www.linkedin.com/in/geraldinebizdev/",
   },
 ] as const;
