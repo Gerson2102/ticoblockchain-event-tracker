@@ -305,27 +305,27 @@ export const SPEAKERS: readonly Speaker[] = [
     linkedinUrl: "https://www.linkedin.com/in/karol-zuniga-516922177/",
   },
 
-  // ─── 14:55 — IoT / Obra Pública (esc-2) ───
+  // ─── 15:20 — IoT / Obra Pública (esc-2) ───
   {
     id: "juan-alejandro-herrera",
     name: "Juan Alejandro Herrera",
     org: "Asesor · Contraloría General de la República",
     talk:
       "Generación de una red de monitoreo de obra pública mediante IoT, modelos de IA y blockchain",
-    time: "14:55 — 15:15",
+    time: "15:20 — 15:25",
     stage: "escenario-2",
     status: "scheduled",
     imageUrl: `${CDN}/69f636d45ccf95fbb0e40b55_Juan%20Alejandro%20Herrera%20L%C3%B3pez.png`,
     linkedinUrl: "https://www.linkedin.com/in/alejandro-herreracr/",
   },
 
-  // ─── 15:15 — Identidad Digital (esc-2) ───
+  // ─── 15:45 — Identidad Digital (esc-2) ───
   {
     id: "anis-halabi",
     name: "Anis Yamill Halabi",
     org: "Co-founder @ Sakundi",
     talk: "Identidad Digital en Blockchain — Privacidad y Regulación",
-    time: "15:15 — 15:35",
+    time: "15:45 — 16:00",
     stage: "escenario-2",
     status: "scheduled",
     imageUrl: `${CDN}/69fe6fad1e6f3131f6d33339_WhatsApp%20Image%202026-05-08%20at%2013.16.18.jpeg`,

@@ -262,8 +262,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "iot-obra-publica-esc2",
-    time: "14:55 — 15:15",
-    startTime: "14:55",
+    time: "15:20 — 15:25",
+    startTime: "15:20",
     title:
       "Generación de una red de monitoreo de obra pública mediante IoT, modelos de IA y blockchain",
     speakerName: "Juan Alejandro Herrera",
@@ -274,8 +274,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "identidad-digital-esc2",
-    time: "15:15 — 15:35",
-    startTime: "15:15",
+    time: "15:45 — 16:00",
+    startTime: "15:45",
     title: "Identidad Digital en Blockchain — Privacidad y Regulación",
     speakerName: "Anis Halabi",
     speakerOrg: "Sakundi",
@@ -285,8 +285,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "coffee-break",
-    time: "15:35 — 15:55",
-    startTime: "15:35",
+    time: "15:25 — 15:45",
+    startTime: "15:25",
     title: "Coffee Break — Networking",
     stage: "both",
     category: "break",
