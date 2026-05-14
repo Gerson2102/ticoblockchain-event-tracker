@@ -12,11 +12,6 @@ import type { Speaker } from "./types";
 
 const CDN = "https://cdn.prod.website-files.com/6744c862a5d9324c919d6b4d";
 
-// Generic placeholder used when the official site does not show a real
-// portrait for a confirmed speaker (e.g. nelson-irias), or when the
-// site's photo attribution is ambiguous.
-const IMG_TBA = `${CDN}/67e29d86c819abd198b2e8cc_Screenshot%20(25).avif`;
-
 export const SPEAKERS: readonly Speaker[] = [
   // ─── 09:15 — Keynote VISA ───
   {
@@ -456,17 +451,6 @@ export const SPEAKERS: readonly Speaker[] = [
     imageUrl: `${CDN}/675c3780bd959b632317034d_jose%20miguel%20zamora.avif`,
     linkedinUrl: "https://www.linkedin.com/in/jose-miguel-z-52638932/",
   },
-  {
-    id: "nelson-irias",
-    name: "Nelson Irías",
-    org: "Por confirmar",
-    talk: "TicoBlockchain y CRTW (Panel)",
-    time: "17:30 — 17:55",
-    stage: "main",
-    status: "scheduled",
-    imageUrl: IMG_TBA,
-  },
-
   // ─── Por anunciar — speakers confirmed on the official site without
   //     a pinned slot in sessions.ts. Each gets a solo card on /exponentes.
   {
