@@ -34,7 +34,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Diego Loaiza Centeno",
     org: "Gerente de Tecnología · Coopenae - Wink",
     talk: "Mitos y Realidades de la Inclusión Financiera",
-    time: "10:00 — 10:25",
+    time: "10:00 — 10:30",
     stage: "main",
     status: "live",
     imageUrl: `${CDN}/67d6c54fe994495169f9271e_Diego%20Loaiza%20Centeno%202.avif`,

@@ -69,7 +69,7 @@ export default function AgendaView({ now, simulated }: AgendaViewProps) {
 
       {/* Toolbar (client) — wrapped in Suspense because it reads useSearchParams */}
       <Suspense fallback={<div className="mb-6 h-24 animate-pulse bg-surface-container-low" />}>
-        <AgendaToolbar totalSlots={slots.length} />
+        <AgendaToolbar slots={slots} />
       </Suspense>
 
       {/* Logistics strip — lunch runs in parallel to talks (not in SESSIONS),

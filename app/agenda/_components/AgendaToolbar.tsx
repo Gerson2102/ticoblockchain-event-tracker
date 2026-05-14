@@ -1,11 +1,18 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useOptimistic, useState, useTransition } from "react";
+import {
+  useEffect,
+  useMemo,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
 import Icon from "../../components/Icon";
+import type { TimeSlot } from "../_lib/groupSessions";
 
 type AgendaToolbarProps = {
-  totalSlots: number;
+  slots: readonly TimeSlot[];
 };
 
 const STAGES = [
@@ -24,7 +31,8 @@ const CATEGORIES = [
   { id: "workshop", label: "Workshop" },
 ] as const;
 
-export default function AgendaToolbar({ totalSlots }: AgendaToolbarProps) {
+export default function AgendaToolbar({ slots }: AgendaToolbarProps) {
+  const totalSlots = slots.length;
   const router = useRouter();
   const params = useSearchParams();
   const stageParam = params.get("stage");
@@ -51,7 +59,42 @@ export default function AgendaToolbar({ totalSlots }: AgendaToolbarProps) {
 
   const [query, setQuery] = useState("");
   const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set());
-  const [visibleCount, setVisibleCount] = useState(totalSlots);
+
+  // Pure derivation of the visible-slot count from filter inputs + slot data.
+  // Mirrors the predicate the DOM-mutation effect below applies row-by-row,
+  // so the "X de Y slots" label updates in render without us having to call
+  // setState from the effect (which the react-hooks/set-state-in-effect rule
+  // flags as a cascading render).
+  const visibleCount = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    let count = 0;
+    for (const slot of slots) {
+      const sessions = [slot.both, slot.main, slot.escenario2].filter(
+        (s): s is NonNullable<typeof s> => s !== undefined,
+      );
+      const searchable = sessions
+        .flatMap((s) => [s.title, s.speakerName, s.speakerOrg, s.description])
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      const categories = sessions.map((s) => s.category);
+      const stages = slot.both
+        ? ["both"]
+        : [
+            slot.main ? "main" : null,
+            slot.escenario2 ? "escenario-2" : null,
+          ].filter((s): s is string => s !== null);
+
+      const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery);
+      const matchesCategory =
+        activeCategories.size === 0 || categories.some((c) => activeCategories.has(c));
+      const matchesStage =
+        urlStage === "todo" || stages.includes("both") || stages.includes(urlStage);
+
+      if (matchesQuery && matchesCategory && matchesStage) count++;
+    }
+    return count;
+  }, [slots, query, activeCategories, urlStage]);
 
   useEffect(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -70,7 +113,6 @@ export default function AgendaToolbar({ totalSlots }: AgendaToolbarProps) {
     });
 
     const rows = document.querySelectorAll<HTMLElement>("[data-slot]");
-    let visible = 0;
     rows.forEach((row) => {
       const searchable = row.getAttribute("data-search") ?? "";
       const categories = (row.getAttribute("data-categories") ?? "").split(",");
@@ -82,9 +124,7 @@ export default function AgendaToolbar({ totalSlots }: AgendaToolbarProps) {
       // have a session in the selected stage to remain visible.
       const matchesStage =
         urlStage === "todo" || stages.includes("both") || stages.includes(urlStage);
-      const isVisible = matchesQuery && matchesCategory && matchesStage;
-      row.hidden = !isVisible;
-      if (isVisible) visible++;
+      row.hidden = !(matchesQuery && matchesCategory && matchesStage);
 
       // Cell-level filter: hide the stage cell whose category doesn't
       // match the active category set, and hide the stage cell that
@@ -103,7 +143,6 @@ export default function AgendaToolbar({ totalSlots }: AgendaToolbarProps) {
         cell.style.display = cellMatchesStage && cellMatchesCategory ? "" : "none";
       });
     });
-    setVisibleCount(visible);
   }, [query, activeCategories, urlStage]);
 
   const toggleCategory = (id: string) => {

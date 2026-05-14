@@ -46,11 +46,12 @@ describe("computeSessionStatuses — event day", () => {
     expect(statuses.get("perspectivas-inversion-main")).toBe("scheduled");
   });
 
-  test("at 10:25 exactly — WINK ends (inclusive end), next slot live-adjacent", () => {
+  test("at 10:25 — Nimiq ends but WINK still runs (until 10:30)", () => {
     const statuses = computeSessionStatuses(SESSIONS, crDate("10:25"));
 
+    // 10:25 < end "10:30" → still live.
+    expect(statuses.get("wink-main")).toBe("live");
     // 10:25 >= end "10:25" → past.
-    expect(statuses.get("wink-main")).toBe("past");
     expect(statuses.get("nimiq-esc2")).toBe("past");
     // Same "next" promotion pattern as at 10:00 — coffee break wins main,
     // Olanzo wins esc-2 as fallback.
@@ -125,7 +126,7 @@ describe("getLiveSessions", () => {
 });
 
 describe("getNextTransitionAt", () => {
-  test("at 10:15 — returns 10:25 (WINK end) as the next boundary", () => {
+  test("at 10:15 — returns 10:25 (Nimiq end) as the next boundary", () => {
     const iso = getNextTransitionAt(crDate("10:15"));
     expect(iso).not.toBeNull();
     // Boundary in CR time: 10:25 → UTC 16:25.

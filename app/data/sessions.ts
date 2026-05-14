@@ -44,7 +44,7 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "wink-main",
-    time: "10:00 — 10:25",
+    time: "10:00 — 10:30",
     startTime: "10:00",
     title: "Neocooperativismo: el futuro le pertenece a las personas",
     speakerName: "Diego Loaiza",

@@ -27,7 +27,7 @@ describe("applyLiveStatus — event day", () => {
     expect(findSpeaker(result, "carlo-blasio").status).toBe("live");
     expect(findSpeaker(result, "ileana-atan-chan").status).toBe("live");
     expect(findSpeaker(result, "jose-miguel-alfaro").status).toBe("live");
-    // WINK ended at 10:25 — Diego is past.
+    // WINK ended at 10:30 — Diego is past.
     expect(findSpeaker(result, "diego-loaiza-centeno").status).toBe("past");
   });
 
