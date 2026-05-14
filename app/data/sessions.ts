@@ -318,8 +318,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "finanzas-regenerativas-esc2",
-    time: "16:30 — 16:55",
-    startTime: "16:30",
+    time: "16:35 — 17:00",
+    startTime: "16:35",
     title: "Sobre el Ecosistema de Finanzas Regenerativas",
     speakerName: "Stefan Fiedler",
     speakerOrg: "ReFi Costa Rica",

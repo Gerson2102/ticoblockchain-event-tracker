@@ -381,13 +381,13 @@ export const SPEAKERS: readonly Speaker[] = [
     linkedinUrl: "https://www.linkedin.com/in/jorgemoraflores/",
   },
 
-  // ─── 16:30 — Finanzas Regenerativas (esc-2) ───
+  // ─── 16:35 — Finanzas Regenerativas (esc-2) ───
   {
     id: "stefan-fiedler",
     name: "Stefan Fiedler",
     org: "Co-Director @ ReFi Costa Rica",
     talk: "Sobre el Ecosistema de Finanzas Regenerativas",
-    time: "16:30 — 16:55",
+    time: "16:35 — 17:00",
     stage: "escenario-2",
     status: "scheduled",
     imageUrl: `${CDN}/69f6362260eea17234867b6b_Stefan%20Fiedler%20Alvarado.png`,
