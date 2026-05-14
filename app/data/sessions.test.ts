@@ -68,11 +68,13 @@ describe("computeSessionStatuses — event day", () => {
     expect(statuses.get("olanzo-esc2")).toBe("next");
   });
 
-  test("at 17:30 — Ecosistemas y CRTW just started on Main", () => {
+  test("at 17:30 — Ecosistema Fintech LatAm still running on Main", () => {
     const statuses = computeSessionStatuses(SESSIONS, crDate("17:30"));
-    // The 16:45–17:25 Main panel ended; CRTW panel runs 17:30–17:55.
-    expect(statuses.get("ecosistema-fintech-latam-main")).toBe("past");
-    expect(statuses.get("ticoblockchain-crtw-main")).toBe("live");
+    // Cascaded +15 from Agentes' new end: Ecosistema runs 17:00–17:40 and
+    // CRTW now starts 17:45 (promoted to "next" since it's the earliest
+    // scheduled on main + both).
+    expect(statuses.get("ecosistema-fintech-latam-main")).toBe("live");
+    expect(statuses.get("ticoblockchain-crtw-main")).toBe("next");
   });
 
   test("at 15:40 — afternoon coffee break (both-stage) is live", () => {

@@ -51,7 +51,7 @@ describe("expandAppearances", () => {
     expect(karla[0].speaker.id).toBe("karla-cordoba-brenes");
     expect(karla[0].additionalSlot).toEqual({
       talk: "TicoBlockchain y CRTW (Panel)",
-      time: "17:30 — 17:55",
+      time: "17:45 — 18:10",
     });
   });
 
@@ -64,7 +64,7 @@ describe("expandAppearances", () => {
     expect(jmz[0].speaker.id).toBe("jose-miguel-zamora");
     expect(jmz[0].additionalSlot).toEqual({
       talk: "TicoBlockchain y CRTW (Panel)",
-      time: "17:30 — 17:55",
+      time: "17:45 — 18:10",
     });
   });
 
@@ -147,8 +147,9 @@ describe("expandAppearances", () => {
     expect(karla[0].additionalSlot?.talk).toBe("TicoBlockchain y CRTW (Panel)");
   });
 
-  test("merged card flips its primary to the currently-live appearance — Karla at 17:35 anchors to CRTW cierre", () => {
-    const withStatus = applyLiveStatus(SPEAKERS, crDate("17:35"));
+  test("merged card flips its primary to the currently-live appearance — Karla at 17:50 anchors to CRTW cierre", () => {
+    // Cascaded +15 from Agentes' new end: CRTW now runs 17:45–18:10.
+    const withStatus = applyLiveStatus(SPEAKERS, crDate("17:50"));
     const appearances = expandAppearances(withStatus);
     const karla = appearances.filter((a) => a.speaker.name === "Karla Córdoba Brenes");
     expect(karla).toHaveLength(1);
@@ -157,8 +158,9 @@ describe("expandAppearances", () => {
     expect(karla[0].additionalSlot?.talk).toBe("Perspectivas de Inversión 2026 (Moderadora)");
   });
 
-  test("merged card flips its primary to the currently-live appearance — JM Zamora at 17:35 anchors to CRTW cierre", () => {
-    const withStatus = applyLiveStatus(SPEAKERS, crDate("17:35"));
+  test("merged card flips its primary to the currently-live appearance — JM Zamora at 17:50 anchors to CRTW cierre", () => {
+    // Cascaded +15 from Agentes' new end: CRTW now runs 17:45–18:10.
+    const withStatus = applyLiveStatus(SPEAKERS, crDate("17:50"));
     const appearances = expandAppearances(withStatus);
     const jmz = appearances.filter((a) => a.speaker.name === "José Miguel Zamora Barquero");
     expect(jmz).toHaveLength(1);

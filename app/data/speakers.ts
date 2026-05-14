@@ -332,13 +332,13 @@ export const SPEAKERS: readonly Speaker[] = [
     linkedinUrl: "https://www.linkedin.com/in/anisyamillhalabi/",
   },
 
-  // ─── 16:00 — Agentes Autónomos (panel main) ───
+  // ─── 16:15 — Agentes Autónomos (panel main) ───
   {
     id: "carlos-rene",
     name: "Carlos René",
     org: "CEO & Founder @ DEGA",
     talk: "Agentes Autónomos (Panel)",
-    time: "16:00 — 16:40",
+    time: "16:15 — 16:55",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/69adda1a8b7cb04006a35843_Carlos.png`,
@@ -350,7 +350,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Cristian Guillén",
     org: "Advisory Delivery Consultant @ IBM",
     talk: "Agentes Autónomos (Panel)",
-    time: "16:00 — 16:40",
+    time: "16:15 — 16:55",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/69fccde3a48d091d953d89b8_Cristian%20Guillen.jpeg`,
@@ -364,7 +364,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Gianina Redondo",
     org: "Project Manager @ Ncubo",
     talk: "Agentes Autónomos (Panel)",
-    time: "16:00 — 16:40",
+    time: "16:15 — 16:55",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/69fcea8335e1df81f740c852_Geaninna%20Redondo.jpeg`,
@@ -374,7 +374,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Jorge Mora Flores",
     org: "Chief Technical Advisor @ LuxDev",
     talk: "Agentes Autónomos (Panel)",
-    time: "16:00 — 16:40",
+    time: "16:15 — 16:55",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/69b166db6b3cda83debb0b55_jorge%20mora%20flores.jpg`,
@@ -395,13 +395,13 @@ export const SPEAKERS: readonly Speaker[] = [
       "https://www.linkedin.com/in/stefan-fiedler-alvarado-0269a0178/",
   },
 
-  // ─── 16:45 — Ecosistema Fintech en LatAm (panel main) ───
+  // ─── 17:00 — Ecosistema Fintech en LatAm (panel main) ───
   {
     id: "jose-miguel-zamora",
     name: "José Miguel Zamora Barquero",
     org: "Presidente @ AsoFintech",
     talk: "Ecosistema Fintech en LatAm: Retos y Oportunidades (Moderador)",
-    time: "16:45 — 17:25",
+    time: "17:00 — 17:40",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/675c3780bd959b632317034d_jose%20miguel%20zamora.avif`,
@@ -412,7 +412,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Enrique Galdámez",
     org: "Executive Director · Fintech Association of Guatemala",
     talk: "Ecosistema Fintech en LatAm: Retos y Oportunidades (Panel)",
-    time: "16:45 — 17:25",
+    time: "17:00 — 17:40",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/69f62d0c5b614afed62689dc_Enrique%20Gald%C3%A1mez.png`,
@@ -433,10 +433,10 @@ export const SPEAKERS: readonly Speaker[] = [
     linkedinUrl: "https://www.linkedin.com/in/ranulfosobrinho/",
   },
 
-  // ─── 17:30 — TicoBlockchain y CRTW (closing panel main) ───
+  // ─── 17:45 — TicoBlockchain y CRTW (closing panel main) ───
   // Karla and José Miguel Zamora are duplicated entries: each is already
   // anchored to an earlier panel (Karla → 10:50 Perspectivas, JM Zamora →
-  // 16:45 Ecosistema Fintech en LatAm Moderador), and we keep a second
+  // 17:00 Ecosistema Fintech en LatAm Moderador), and we keep a second
   // entry here so the CRTW session's panelist roster stays accurate in
   // this file. The `expandAppearances` pass in
   // `app/exponentes/_lib/groupSpeakers.ts` collapses each pair into a
@@ -448,7 +448,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Karla Córdoba Brenes",
     org: "Presidenta @ AsoBlockchain",
     talk: "TicoBlockchain y CRTW (Panel)",
-    time: "17:30 — 17:55",
+    time: "17:45 — 18:10",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/675c37edeca90d4c739eee46_KarlaC_JTS-22%20(p).avif`,
@@ -459,7 +459,7 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "José Miguel Zamora Barquero",
     org: "Presidente @ AsoFintech",
     talk: "TicoBlockchain y CRTW (Panel)",
-    time: "17:30 — 17:55",
+    time: "17:45 — 18:10",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/675c3780bd959b632317034d_jose%20miguel%20zamora.avif`,
@@ -483,20 +483,20 @@ export const SPEAKERS: readonly Speaker[] = [
     name: "Diego Perez",
     org: "VP · Asociación Brasileña de Cripto",
     talk: "Ecosistema Fintech en LatAm: Retos y Oportunidades (Panel)",
-    time: "16:45 — 17:25",
+    time: "17:00 — 17:40",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/69f62c803aea82102c7fc3b5_Diego%20Perez.png`,
     linkedinUrl: "https://www.linkedin.com/in/diegoperezsmu/",
   },
-  // Jorge Neyra is also on Ecosistema Fintech en LatAm at 16:45 — auto-merges
+  // Jorge Neyra is also on Ecosistema Fintech en LatAm at 17:00 — auto-merges
   // with his primary Pagos y Stablecoins card via `mergeDuplicates`.
   {
     id: "jorge-neyra-fia",
     name: "Jorge Neyra",
     org: "Vice President · Cámara Fintech Panamá",
     talk: "Ecosistema Fintech en LatAm: Retos y Oportunidades (Panel)",
-    time: "16:45 — 17:25",
+    time: "17:00 — 17:40",
     stage: "main",
     status: "scheduled",
     imageUrl: `${CDN}/69f62ee8784d9fb985d57099_Jorge%20Neyra.png`,

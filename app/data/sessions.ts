@@ -294,8 +294,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "agentes-autonomos-main",
-    time: "16:00 — 16:40",
-    startTime: "16:00",
+    time: "16:15 — 16:55",
+    startTime: "16:15",
     title: "Agentes Autónomos",
     speakerName:
       "Cristian Guillén · Carlos René · Jorge Mora · Gianina Redondo · Mod: Ranulfo Paiva Barbosa",
@@ -329,8 +329,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "ecosistema-fintech-latam-main",
-    time: "16:45 — 17:25",
-    startTime: "16:45",
+    time: "17:00 — 17:40",
+    startTime: "17:00",
     title: "Ecosistema Fintech en LatAm: Retos y Oportunidades",
     speakerName:
       "Diego Pérez · Enrique Galdámez · Jorge Neyra · Mod: José M. Zamora",
@@ -354,8 +354,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "ticoblockchain-crtw-main",
-    time: "17:30 — 17:55",
-    startTime: "17:30",
+    time: "17:45 — 18:10",
+    startTime: "17:45",
     title: "TicoBlockchain y CRTW",
     speakerName: "Karla Córdoba · José Zamora · Nelson Irías",
     description:
@@ -366,8 +366,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "tether-brindis",
-    time: "18:00 — 18:15",
-    startTime: "18:00",
+    time: "18:15 — 18:30",
+    startTime: "18:15",
     title: "Tether — Brindis de Cierre",
     speakerOrg: "Tether",
     stage: "both",
@@ -376,8 +376,8 @@ export const SESSIONS: readonly Session[] = [
   },
   {
     id: "coctel",
-    time: "18:15 — 20:00",
-    startTime: "18:15",
+    time: "18:30 — 20:00",
+    startTime: "18:30",
     title: "Cóctel de Cierre",
     speakerOrg: "Tether",
     stage: "both",
