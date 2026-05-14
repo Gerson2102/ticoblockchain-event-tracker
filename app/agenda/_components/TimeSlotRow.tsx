@@ -102,17 +102,22 @@ export default function TimeSlotRow({ slot, staggerClass }: TimeSlotRowProps) {
           } py-2`}
         >
           <div className="hidden md:flex items-center">{timeLabel}</div>
-          <div className="md:hidden mb-2">{timeLabel}</div>
 
           <div
             data-stage="main"
             className="flex flex-col"
             {...(slot.main ? { "data-session-category": slot.main.category } : {})}
           >
-            {/* Mobile-only stage label */}
-            <div className="md:hidden label-meta font-bold text-secondary mb-1 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-secondary shrink-0" aria-hidden="true" />
-              Main Stage
+            {/* Mobile-only stage label + per-stage time so each cell carries
+                its own timestamp when the toolbar filter hides the sibling. */}
+            <div className="md:hidden mb-1 flex items-center gap-2">
+              <span className="label-meta font-bold text-secondary flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-secondary shrink-0" aria-hidden="true" />
+                Main Stage
+              </span>
+              <span className="mono-data text-[11px] font-bold text-primary whitespace-nowrap ml-auto">
+                {slot.time}
+              </span>
             </div>
             {slot.main ? (
               <SessionCard session={slot.main} stageLabel="MAIN" />
@@ -133,9 +138,14 @@ export default function TimeSlotRow({ slot, staggerClass }: TimeSlotRowProps) {
             className="flex flex-col"
             {...(slot.escenario2 ? { "data-session-category": slot.escenario2.category } : {})}
           >
-            <div className="md:hidden label-meta font-bold text-primary mt-2 mb-1 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-primary shrink-0" aria-hidden="true" />
-              Escenario 2
+            <div className="md:hidden mt-2 mb-1 flex items-center gap-2">
+              <span className="label-meta font-bold text-primary flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-primary shrink-0" aria-hidden="true" />
+                Escenario 2
+              </span>
+              <span className="mono-data text-[11px] font-bold text-primary whitespace-nowrap ml-auto">
+                {slot.time}
+              </span>
             </div>
             {slot.escenario2 ? (
               <SessionCard session={slot.escenario2} stageLabel="ESC 2" />
