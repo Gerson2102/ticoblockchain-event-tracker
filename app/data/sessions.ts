@@ -111,6 +111,15 @@ export const SESSIONS: readonly Session[] = [
     status: "scheduled",
   },
   {
+    id: "lunch-break-main",
+    time: "11:30 — 12:30",
+    startTime: "11:30",
+    title: "Lunch Break — Brazalete ROSA",
+    stage: "both",
+    category: "break",
+    status: "scheduled",
+  },
+  {
     id: "fintech-for-good-main",
     time: "11:35 — 11:55",
     startTime: "11:35",
@@ -169,6 +178,15 @@ export const SESSIONS: readonly Session[] = [
     status: "scheduled",
   },
   {
+    id: "lunch-break-esc2",
+    time: "12:30 — 13:30",
+    startTime: "12:30",
+    title: "Lunch Break — Brazalete AZUL",
+    stage: "both",
+    category: "break",
+    status: "scheduled",
+  },
+  {
     id: "aml-cft-geraldine-main",
     time: "12:50 — 13:10",
     startTime: "12:50",
@@ -178,15 +196,6 @@ export const SESSIONS: readonly Session[] = [
     speakerOrg: "Chainalysis",
     stage: "main",
     category: "talk",
-    status: "scheduled",
-  },
-  {
-    id: "lunch-break-esc2",
-    time: "12:50 — 13:30",
-    startTime: "12:50",
-    title: "Lunch Break",
-    stage: "escenario-2",
-    category: "break",
     status: "scheduled",
   },
   {
