@@ -167,17 +167,19 @@ describe("expandAppearances", () => {
     expect(jmz[0].additionalSlot?.talk).toBe("Ecosistema Fintech en LatAm: Retos y Oportunidades (Moderador)");
   });
 
-  test("panel sessionId resolves for every panel session that exists", () => {
+  test("panel sessionId resolves for every panel session that surfaces on cards", () => {
     const appearances = expandAppearances(SPEAKERS);
     const panelSessionIds = new Set<string>();
     for (const a of appearances) {
       if (a.panelContext?.sessionId) panelSessionIds.add(a.panelContext.sessionId);
     }
-    // 5 known panels: perspectivas, pagos, agentes, panel-fia, ecosistemas-crtw.
+    // CRTW (ticoblockchain-crtw-main) is intentionally absent: both its
+    // panelists (Karla, JM Zamora) anchor to earlier primary slots and
+    // surface CRTW via additionalSlot rather than panelContext.
     expect(panelSessionIds).toContain("perspectivas-inversion-main");
     expect(panelSessionIds).toContain("pagos-stablecoins-main");
     expect(panelSessionIds).toContain("agentes-autonomos-main");
     expect(panelSessionIds).toContain("ecosistema-fintech-latam-main");
-    expect(panelSessionIds).toContain("ticoblockchain-crtw-main");
+    expect(panelSessionIds).not.toContain("ticoblockchain-crtw-main");
   });
 });
