@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HERO_CONTENT } from "../../data/home-content";
 import type { Session } from "../../data/types";
+import { EVENT_START_HHMM } from "../../lib/session-time";
 import { MAX_STAGGER_LEVEL } from "../../lib/stagger";
 import AgendaPreviewRow from "../AgendaPreviewRow";
 import Icon from "../Icon";
@@ -23,9 +24,9 @@ export default function HeroBefore({
 }: HeroBeforeProps) {
   const countdownLabel =
     daysUntilEvent === 0
-      ? "Hoy · Arranca 08:00 CRT"
+      ? `Hoy · Arranca ${EVENT_START_HHMM} CRT`
       : daysUntilEvent === 1
-        ? "Mañana · 08:00 CRT"
+        ? `Mañana · ${EVENT_START_HHMM} CRT`
         : `En ${daysUntilEvent} días`;
 
   return (
@@ -90,7 +91,7 @@ export default function HeroBefore({
                 Check-in
               </div>
               <div className="mono-data text-base sm:text-xl md:text-2xl font-black text-on-primary tracking-tighter">
-                08:00
+                {EVENT_START_HHMM}
               </div>
             </div>
             <div className="py-3 px-1">

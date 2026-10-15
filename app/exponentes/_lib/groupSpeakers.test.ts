@@ -23,14 +23,14 @@ function countDuplicateAppearances(): number {
 
 describe("expandAppearances", () => {
   test("returns one appearance per speaker, minus same-name duplicates that merge into the earliest card", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     // Karla, JM Zamora, and Gianina each have two source entries that
     // collapse into a single card with additionalSlot.
     expect(appearances).toHaveLength(SPEAKERS.length - countDuplicateAppearances());
   });
 
   test("Gianina renders as a single card with the TBA slot folded in as additionalSlot", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     const gianinaAppearances = appearances.filter(
       (a) => a.speaker.name === "Gianina Redondo",
     );
@@ -43,7 +43,7 @@ describe("expandAppearances", () => {
   });
 
   test("Karla renders as a single card anchored to her Perspectivas slot, with the CRTW cierre as additionalSlot", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     const karla = appearances.filter(
       (a) => a.speaker.name === "Karla Córdoba Brenes",
     );
@@ -56,7 +56,7 @@ describe("expandAppearances", () => {
   });
 
   test("JM Zamora renders as a single card anchored to his Ecosistema Fintech panel, with the CRTW cierre as additionalSlot", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     const jmz = appearances.filter(
       (a) => a.speaker.name === "José Miguel Zamora Barquero",
     );
@@ -69,7 +69,7 @@ describe("expandAppearances", () => {
   });
 
   test("solo speakers have no panelContext", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     const visa = appearances.find(
       (a) => a.speaker.id === "rodrigo-barros-de-paula",
     );
@@ -78,7 +78,7 @@ describe("expandAppearances", () => {
   });
 
   test("panelists share a panelContext with the right size, sessionId, and indices", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     // Perspectivas de Inversión 2026 — 5 panelists, lead is Karla (Moderadora).
     const perspectivasIds = [
       "karla-cordoba-brenes",
@@ -108,7 +108,7 @@ describe("expandAppearances", () => {
   });
 
   test("panelists are emitted contiguously in output order", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     const start = appearances.findIndex(
       (a) => a.speaker.id === "karla-cordoba-brenes",
     );
@@ -127,7 +127,7 @@ describe("expandAppearances", () => {
   });
 
   test("'Por anunciar' speakers each get their own appearance with no panelContext", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     const tba = appearances.filter(
       (a) => a.speaker.time === "Por anunciar",
     );
@@ -170,7 +170,7 @@ describe("expandAppearances", () => {
   });
 
   test("panel sessionId resolves for every panel session that surfaces on cards", () => {
-    const appearances = expandAppearances(SPEAKERS);
+    const appearances = expandAppearances(applyLiveStatus(SPEAKERS, crDate("10:00", "2026-05-13")));
     const panelSessionIds = new Set<string>();
     for (const a of appearances) {
       if (a.panelContext?.sessionId) panelSessionIds.add(a.panelContext.sessionId);

@@ -91,17 +91,17 @@ describe("computeSessionStatuses — event day", () => {
 });
 
 describe("computeSessionStatuses — off-event-day fallback", () => {
-  test("day before the event returns literal seed statuses", () => {
+  test("day before the event: everything is scheduled", () => {
     const statuses = computeSessionStatuses(SESSIONS, crDate("10:00", "2026-05-13"));
     for (const session of SESSIONS) {
-      expect(statuses.get(session.id)).toBe(session.status);
+      expect(statuses.get(session.id)).toBe("scheduled");
     }
   });
 
-  test("day after the event returns literal seed statuses", () => {
+  test("day after the event: everything is past", () => {
     const statuses = computeSessionStatuses(SESSIONS, crDate("10:00", "2026-05-15"));
     for (const session of SESSIONS) {
-      expect(statuses.get(session.id)).toBe(session.status);
+      expect(statuses.get(session.id)).toBe("past");
     }
   });
 });
@@ -117,6 +117,16 @@ describe("getLiveSessions", () => {
     const live = getLiveSessions(crDate("15:40"));
     expect(live.main?.id).toBe("coffee-break");
     expect(live.escenario2?.id).toBe("coffee-break");
+  });
+
+  test("at 11:40 — each stage's own talk beats the venue-wide lunch wave", () => {
+    const live = getLiveSessions(crDate("11:40"));
+    expect(live.main?.id).toBe("fintech-for-good-main");
+    expect(live.escenario2?.id).toBe("lulubit-esc2");
+  });
+
+  test("at 13:00 — AML/CFT on main beats the AZUL lunch wave", () => {
+    expect(getLiveSessions(crDate("13:00")).main?.id).toBe("aml-cft-geraldine-main");
   });
 
   test("at 09:58 (between VISA end and WINK start, main stage has no live) — both undefined", () => {

@@ -38,9 +38,6 @@ export type Speaker = {
   stage: Exclude<Stage, "both">;
   status: SessionStatus;
   imageUrl: string;
-  // Render the portrait in grayscale until hovered. Used when an official
-  // portrait is stylistically mismatched and would break the editorial tone.
-  monochrome?: boolean;
   linkedinUrl?: string;
   companyUrl?: string;
 };
@@ -56,16 +53,7 @@ export type PracticalInfoItem = {
   body: string; // prose detail
 };
 
-// Stat-band hook for the arrival section — same editorial shape as
-// PracticalInfoItem, duplicated here so the venue-directions module can
-// own its own vocabulary (distances, parking, elevation) without leaking
-// back into the schedule feed.
-export type ArrivalStat = {
-  id: string;
-  hook: string;
-  label: string;
-  body: string;
-};
+export type ArrivalStat = PracticalInfoItem;
 
 export type VenueDirections = {
   name: string;

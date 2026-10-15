@@ -50,9 +50,7 @@ export default function SpeakerRow({ appearance, staggerClass }: SpeakerRowProps
       {/* Square thumbnail — 80px keeps the editorial portrait recognisable
           while shrinking the card footprint by ~10× vs the full hero card. */}
       <div
-        className={`relative w-20 h-20 shrink-0 bg-surface-container-highest overflow-hidden ${
-          speaker.monochrome ? "grayscale" : ""
-        }`}
+        className="relative w-20 h-20 shrink-0 bg-surface-container-highest overflow-hidden"
       >
         <Image
           src={speaker.imageUrl}

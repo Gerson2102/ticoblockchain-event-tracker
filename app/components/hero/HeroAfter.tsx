@@ -34,7 +34,7 @@ export default function HeroAfter({ totalSessions }: HeroAfterProps) {
         <div className="grid grid-cols-3 gap-0 border-y-2 border-on-primary/20 w-full max-w-3xl animate-fade-up stagger-4">
           <div className="py-4 px-2 border-r border-on-primary/20">
             <div className="label-meta text-on-primary/50 mb-1">
-              Charlas
+              Sesiones
             </div>
             <div className="mono-data text-2xl sm:text-4xl font-black text-on-primary tracking-tighter">
               {totalSessions}

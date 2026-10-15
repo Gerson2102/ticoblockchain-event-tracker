@@ -51,9 +51,6 @@ export const HERO_CONTENT = {
   heroImageUrl: "/images/hero-blockchain.webp",
   heroImageAlt:
     "Abstract representation of blockchain data nodes and neural networks in deep blue tones",
-  sidebarImageUrl: "/images/sidebar-networking.webp",
-  sidebarImageAlt:
-    "Conference networking area with modern furniture and high-tech displays",
   capacityLabel: "ESTADO ACTUAL DEL EVENTO: 85% CAPACIDAD",
 } as const;
 

@@ -3,16 +3,15 @@ import type { Speaker } from "./types";
 // Source of truth: ticoblockchain.cr Speakers section (May 14, 2026 lineup).
 // Confirmed roster as published by the client. Ordered by:
 //   1. Agenda time (chronological).
-//   2. "Por anunciar" tail — speakers without a pinned slot. They keep their
-//      seed status and never auto-flip during the event because no session row
-//      matches "Por anunciar".
+//   2. "Por anunciar" tail — speakers without a pinned slot. They never match a
+//      session row, so applyLiveStatus gives them scheduled/past by phase.
 //
 // Portrait URLs are pulled from the official site CDN
 // (cdn.prod.website-files.com). Whitelisted in next.config.ts.
 
 const CDN = "https://cdn.prod.website-files.com/6744c862a5d9324c919d6b4d";
 
-export const SPEAKERS: readonly Speaker[] = [
+export const SPEAKERS: readonly Omit<Speaker, "status">[] = [
   // ─── 09:15 — Keynote VISA ───
   {
     id: "rodrigo-barros-de-paula",
@@ -22,7 +21,6 @@ export const SPEAKERS: readonly Speaker[] = [
       "Tendencias de Pago y la Modernización del Ecosistema de Servicios Financieros",
     time: "09:15 — 09:55",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69f6271c4264d974a7e8f714_rodrigo.png`,
     linkedinUrl:
       "https://www.linkedin.com/in/rodrigo-barros-de-paula-b243ba4/",
@@ -36,7 +34,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Mitos y Realidades de la Inclusión Financiera",
     time: "10:00 — 10:30",
     stage: "main",
-    status: "live",
     imageUrl: `${CDN}/67d6c54fe994495169f9271e_Diego%20Loaiza%20Centeno%202.avif`,
     linkedinUrl: "https://www.linkedin.com/in/diego-loaiza-a4561027/",
   },
@@ -47,7 +44,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Crea una Crypto App y gana hasta $10k con Nimiq",
     time: "10:00 — 10:25",
     stage: "escenario-2",
-    status: "live",
     imageUrl: `${CDN}/69f6323e348244fb7e89fa16_Ricardo%20Barquero%20Carranza.png`,
     linkedinUrl: "https://www.linkedin.com/in/ricardo-barquero/",
   },
@@ -60,7 +56,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Perspectivas de Inversión 2026 (Moderadora)",
     time: "10:50 — 11:30",
     stage: "main",
-    status: "next",
     imageUrl: `${CDN}/675c37edeca90d4c739eee46_KarlaC_JTS-22%20(p).avif`,
     linkedinUrl: "https://www.linkedin.com/in/muguika",
   },
@@ -71,7 +66,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Perspectivas de Inversión 2026 (Panel)",
     time: "10:50 — 11:30",
     stage: "main",
-    status: "next",
     imageUrl: `${CDN}/69dfe2458c10e3dbe5207908_Walter%20Montes.png`,
     linkedinUrl: "https://www.linkedin.com/in/waltermontes/",
   },
@@ -82,7 +76,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Perspectivas de Inversión 2026 (Panel)",
     time: "10:50 — 11:30",
     stage: "main",
-    status: "next",
     imageUrl: `${CDN}/69f62adf06eece1d1ee43884_c%20arlos.png`,
     linkedinUrl: "https://www.linkedin.com/in/cblasio/",
   },
@@ -93,7 +86,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Perspectivas de Inversión 2026 (Panel)",
     time: "10:50 — 11:30",
     stage: "main",
-    status: "next",
     imageUrl: `${CDN}/69fccea6166af72c5f9f49eb_Screenshot%20(8).png`,
     linkedinUrl:
       "https://www.linkedin.com/in/ileana-atan-chan-abb1714a/",
@@ -105,7 +97,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Perspectivas de Inversión 2026 (Panel)",
     time: "10:50 — 11:30",
     stage: "main",
-    status: "next",
     imageUrl: `${CDN}/69f62fb27621c1fce04b1453_Jos%C3%A9%20Miguel%20Alfaro.png`,
     linkedinUrl:
       "https://cr.linkedin.com/in/jos%C3%A9-miguel-alfaro-g%C3%B3mez-6a491529",
@@ -119,7 +110,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "El Cliente Fantasma y el Arte de Reconectar",
     time: "10:50 — 11:15",
     stage: "escenario-2",
-    status: "scheduled",
     imageUrl: `${CDN}/69fe73f37e61f3fbffeb1fc7_Screenshot555.png`,
     linkedinUrl: "https://www.linkedin.com/in/niklaslind/",
   },
@@ -132,7 +122,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Lulubit: el puente entre cripto y la banca local",
     time: "11:20 — 11:50",
     stage: "escenario-2",
-    status: "scheduled",
     imageUrl: `${CDN}/69fe74bcd3badd55b0f4c10d_Alberto%20Gal%C3%A1n.png`,
     linkedinUrl: "https://www.linkedin.com/in/albertogalanb/",
   },
@@ -145,7 +134,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Fintech for Good — Transformación de las Ciudades",
     time: "11:35 — 11:55",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69dfdfe396fe7ef28d86f859_Steven%20Cabrera.jpeg`,
   },
 
@@ -158,7 +146,6 @@ export const SPEAKERS: readonly Speaker[] = [
       "De Costa Rica al mundo: cómo Stellar está creando oportunidades reales en LATAM",
     time: "11:55 — 12:15",
     stage: "escenario-2",
-    status: "scheduled",
     imageUrl: `${CDN}/6a02151165ad69ecfb2f216c_Sebasti%C3%A1n%20Ceciliano.jpg.jpeg`,
     linkedinUrl: "https://www.linkedin.com/in/cbiux/",
   },
@@ -172,7 +159,6 @@ export const SPEAKERS: readonly Speaker[] = [
       "Autorregulación y Gobernanza Operativa: visión para fundadores e instituciones públicas",
     time: "12:00 — 12:20",
     stage: "main",
-    status: "scheduled",
     imageUrl: "/images/speakers/daniela-avendano.webp",
     linkedinUrl: "https://www.linkedin.com/in/licdaavendano/",
   },
@@ -186,7 +172,6 @@ export const SPEAKERS: readonly Speaker[] = [
       "Privacidad Programable: Ethereum como Infraestructura para el Sector Público",
     time: "12:25 — 12:45",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69b1632ad8361e61e604f16a_Andy%20Guzman.jpeg`,
     linkedinUrl: "https://www.linkedin.com/in/andyguzmantoledo/",
   },
@@ -200,7 +185,6 @@ export const SPEAKERS: readonly Speaker[] = [
       "La evolución de las expectativas de cumplimiento AML/CFT en activos digitales y VASPs",
     time: "12:50 — 13:10",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/6a049d0d4f4d740be4d3e507_Geraldine%20Pacheco%20Field.png`,
     linkedinUrl: "https://www.linkedin.com/in/geraldinebizdev/",
   },
@@ -213,7 +197,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Del Código a la Ley: Web3 y la Ley de Activos Digitales",
     time: "13:15 — 13:35",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/67dd4ba9bd7e331b594ea0bf_Screenshot4.avif`,
     linkedinUrl:
       "https://www.linkedin.com/in/stephanie-s%C3%A1nchez-misscryptolawyer-b512aa14b/",
@@ -227,7 +210,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Provenance: por qué la próxima gran infraestructura no es AI — es confianza verificable",
     time: "13:40 — 14:20",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69dfd56f01845b6f1e8af5df_chuy%20cepeda.jpg`,
     linkedinUrl: "https://www.linkedin.com/in/chuycepeda/",
     companyUrl: "https://chuycepeda.com",
@@ -241,7 +223,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Innovaciones en digital assets y tokenización de pagos",
     time: "14:25 — 14:45",
     stage: "main",
-    status: "scheduled",
     imageUrl: "/images/speakers/carolina-marino.webp",
     linkedinUrl:
       "https://www.linkedin.com/in/carolina-mari%C3%B1o-rehbein-b0796a65/",
@@ -255,7 +236,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Pagos y Stablecoins (Moderador)",
     time: "14:50 — 15:30",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69f62ded5913d16a699d9f0c_Javier%20Buitrago.png`,
     linkedinUrl: "https://www.linkedin.com/in/jbuitrago/",
   },
@@ -266,7 +246,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Pagos y Stablecoins (Panel)",
     time: "14:50 — 15:30",
     stage: "main",
-    status: "scheduled",
     imageUrl: "/images/speakers/daniel-calderon.webp",
     linkedinUrl: "https://www.linkedin.com/in/daniel-calder%C3%B3n-ey/",
   },
@@ -277,7 +256,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Pagos y Stablecoins (Panel)",
     time: "14:50 — 15:30",
     stage: "main",
-    status: "scheduled",
     imageUrl: "/images/speakers/renato-carvajal.webp",
     linkedinUrl: "https://www.linkedin.com/in/carlosrenatocarvajal/",
   },
@@ -288,7 +266,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Pagos y Stablecoins (Panel)",
     time: "14:50 — 15:30",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69f62ee8784d9fb985d57099_Jorge%20Neyra.png`,
     linkedinUrl:
       "https://www.linkedin.com/in/jorge-adan-neyra-loaisiga-794a49125/",
@@ -300,7 +277,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Pagos y Stablecoins (Panel)",
     time: "14:50 — 15:30",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69fccf2b23ed1b3481f61906_Screenshot%20(9).png`,
     linkedinUrl: "https://www.linkedin.com/in/karol-zuniga-516922177/",
   },
@@ -314,7 +290,6 @@ export const SPEAKERS: readonly Speaker[] = [
       "Generación de una red de monitoreo de obra pública mediante IoT, modelos de IA y blockchain",
     time: "15:20 — 15:25",
     stage: "escenario-2",
-    status: "scheduled",
     imageUrl: `${CDN}/69f636d45ccf95fbb0e40b55_Juan%20Alejandro%20Herrera%20L%C3%B3pez.png`,
     linkedinUrl: "https://www.linkedin.com/in/alejandro-herreracr/",
   },
@@ -327,7 +302,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Identidad Digital en Blockchain — Privacidad y Regulación",
     time: "15:45 — 16:00",
     stage: "escenario-2",
-    status: "scheduled",
     imageUrl: `${CDN}/69fe6fad1e6f3131f6d33339_WhatsApp%20Image%202026-05-08%20at%2013.16.18.jpeg`,
     linkedinUrl: "https://www.linkedin.com/in/anisyamillhalabi/",
   },
@@ -340,7 +314,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Agentes Autónomos (Panel)",
     time: "16:15 — 16:55",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69adda1a8b7cb04006a35843_Carlos.png`,
     linkedinUrl: "https://www.linkedin.com/in/ccerrato147/",
     companyUrl: "https://www.dega.org/",
@@ -352,7 +325,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Agentes Autónomos (Panel)",
     time: "16:15 — 16:55",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69fccde3a48d091d953d89b8_Cristian%20Guillen.jpeg`,
     linkedinUrl: "https://www.linkedin.com/in/cristian-guillen-men/",
   },
@@ -366,7 +338,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Agentes Autónomos (Panel)",
     time: "16:15 — 16:55",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69fcea8335e1df81f740c852_Geaninna%20Redondo.jpeg`,
   },
   {
@@ -376,7 +347,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Agentes Autónomos (Panel)",
     time: "16:15 — 16:55",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69b166db6b3cda83debb0b55_jorge%20mora%20flores.jpg`,
     linkedinUrl: "https://www.linkedin.com/in/jorgemoraflores/",
   },
@@ -389,7 +359,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Sobre el Ecosistema de Finanzas Regenerativas",
     time: "16:35 — 17:00",
     stage: "escenario-2",
-    status: "scheduled",
     imageUrl: `${CDN}/69f6362260eea17234867b6b_Stefan%20Fiedler%20Alvarado.png`,
     linkedinUrl:
       "https://www.linkedin.com/in/stefan-fiedler-alvarado-0269a0178/",
@@ -403,7 +372,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Ecosistema Fintech en LatAm: Retos y Oportunidades (Moderador)",
     time: "17:00 — 17:40",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/675c3780bd959b632317034d_jose%20miguel%20zamora.avif`,
     linkedinUrl: "https://www.linkedin.com/in/jose-miguel-z-52638932/",
   },
@@ -414,7 +382,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Ecosistema Fintech en LatAm: Retos y Oportunidades (Panel)",
     time: "17:00 — 17:40",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69f62d0c5b614afed62689dc_Enrique%20Gald%C3%A1mez.png`,
     linkedinUrl: "https://www.linkedin.com/in/enriquegaldamez28/",
   },
@@ -428,7 +395,6 @@ export const SPEAKERS: readonly Speaker[] = [
       "Convergencia: Cuando Agentes AI, Blockchain y Quantum Computing Crean (y Pueden Destruir) Riqueza",
     time: "17:00 — 17:25",
     stage: "escenario-2",
-    status: "scheduled",
     imageUrl: `${CDN}/67d6c44f3308e481191fce7a_1516577422716.jpg`,
     linkedinUrl: "https://www.linkedin.com/in/ranulfosobrinho/",
   },
@@ -450,7 +416,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "TicoBlockchain y CRTW (Panel)",
     time: "17:45 — 18:10",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/675c37edeca90d4c739eee46_KarlaC_JTS-22%20(p).avif`,
     linkedinUrl: "https://www.linkedin.com/in/muguika",
   },
@@ -461,7 +426,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "TicoBlockchain y CRTW (Panel)",
     time: "17:45 — 18:10",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/675c3780bd959b632317034d_jose%20miguel%20zamora.avif`,
     linkedinUrl: "https://www.linkedin.com/in/jose-miguel-z-52638932/",
   },
@@ -474,7 +438,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Pitch Session",
     time: "Por anunciar",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69b1647566e862a48f42e86e_rogelio%20martinez.jpg`,
     linkedinUrl: "https://www.linkedin.com/in/rogeliomartinez/",
   },
@@ -485,7 +448,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Ecosistema Fintech en LatAm: Retos y Oportunidades (Panel)",
     time: "17:00 — 17:40",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69f62c803aea82102c7fc3b5_Diego%20Perez.png`,
     linkedinUrl: "https://www.linkedin.com/in/diegoperezsmu/",
   },
@@ -498,7 +460,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Ecosistema Fintech en LatAm: Retos y Oportunidades (Panel)",
     time: "17:00 — 17:40",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69f62ee8784d9fb985d57099_Jorge%20Neyra.png`,
     linkedinUrl:
       "https://www.linkedin.com/in/jorge-adan-neyra-loaisiga-794a49125/",
@@ -510,7 +471,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Agentes Autónomos y Dinero Digital",
     time: "Por anunciar",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69fcea8335e1df81f740c852_Geaninna%20Redondo.jpeg`,
   },
 
@@ -522,7 +482,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Pagos Digitales",
     time: "Por anunciar",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/69f62b57dd7cdadd0f7f10ba_Screenshot12.png`,
     linkedinUrl:
       "https://www.linkedin.com/in/carlos-jos%C3%A9-pardo-32819162/",
@@ -534,7 +493,6 @@ export const SPEAKERS: readonly Speaker[] = [
     talk: "Regulación Fintech — Estado Actual y Perspectivas",
     time: "Por anunciar",
     stage: "main",
-    status: "scheduled",
     imageUrl: `${CDN}/67d029a93702b2c591a8ce34_Randall%20Barquero%202025.avif`,
     linkedinUrl: "https://linkedin.com/in/randall-barquero",
   },

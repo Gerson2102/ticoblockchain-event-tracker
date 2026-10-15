@@ -52,3 +52,5 @@ next-env.d.ts
 
 public/images/qr-production-netlify.png
 public/images/qr-production.png
+# local event-day tooling (agenda time-shift script + runbook) — changes per edition
+/scripts

@@ -54,9 +54,7 @@ function Portrait({
 }) {
   return (
     <div
-      className={`relative w-full aspect-[4/5] overflow-hidden bg-surface-container-highest ${
-        speaker.monochrome ? "grayscale" : ""
-      }`}
+      className="relative w-full aspect-[4/5] overflow-hidden bg-surface-container-highest"
     >
       <Image
         src={speaker.imageUrl}

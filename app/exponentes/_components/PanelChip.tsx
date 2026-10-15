@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { agendaHrefForStage } from "../../data/venue";
 import type { Speaker } from "../../data/types";
 import Icon from "../../components/Icon";
 import type { PanelContext } from "../_lib/groupSpeakers";
@@ -19,10 +20,8 @@ type PanelChipProps = {
 // label and its target URL — keeps SpeakerCard and SpeakerRow visually
 // consistent across viewports.
 export default function PanelChip({ context, stage, variant = "card" }: PanelChipProps) {
-  const stageQuery = stage === "main" ? "main" : "escenario-2";
-  const href = context.sessionId
-    ? `/agenda?stage=${stageQuery}#session-${context.sessionId}`
-    : `/agenda?stage=${stageQuery}`;
+  const base = agendaHrefForStage(stage);
+  const href = context.sessionId ? `${base}#session-${context.sessionId}` : base;
 
   const sizeClass = variant === "row" ? "text-[9px]" : "text-[10px]";
 

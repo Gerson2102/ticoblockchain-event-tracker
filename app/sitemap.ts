@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ticoblockchain.cr";
+import { SITE_URL } from "./lib/url";
 
 // Resolved at build time. Bumps automatically on every deploy so crawlers
 // see fresh signals when the agenda or speaker roster changes — no need to

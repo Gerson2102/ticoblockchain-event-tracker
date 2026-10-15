@@ -12,10 +12,6 @@ type RestLineupProps = {
   hasFeatured: boolean;
 };
 
-function appearanceKey(a: SpeakerAppearance): string {
-  return `solo|${a.speaker.id}`;
-}
-
 // Owns the stage-filter state for the "rest of the lineup" section.
 // Featured stays unfiltered above (it's a live signal, not a directory)
 // — only the long lineup grid responds to the toolbar. Both viewports
@@ -64,7 +60,7 @@ export default function RestLineup({ appearances, hasFeatured }: RestLineupProps
       <div className="flex flex-col gap-2 sm:hidden">
         {filtered.map((appearance, i) => (
           <SpeakerRow
-            key={`row-${appearanceKey(appearance)}`}
+            key={`row-${appearance.speaker.id}`}
             appearance={appearance}
             staggerClass={`stagger-${Math.min(i + 1, MAX_STAGGER_LEVEL)}`}
           />
@@ -75,7 +71,7 @@ export default function RestLineup({ appearances, hasFeatured }: RestLineupProps
       <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {filtered.map((appearance, i) => (
           <SpeakerCard
-            key={`card-${appearanceKey(appearance)}`}
+            key={`card-${appearance.speaker.id}`}
             appearance={appearance}
             staggerClass={`stagger-${Math.min(i + 1, MAX_STAGGER_LEVEL)}`}
           />

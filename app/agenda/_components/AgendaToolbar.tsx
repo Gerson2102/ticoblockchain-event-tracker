@@ -60,14 +60,12 @@ export default function AgendaToolbar({ slots }: AgendaToolbarProps) {
   const [query, setQuery] = useState("");
   const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set());
 
-  // Pure derivation of the visible-slot count from filter inputs + slot data.
-  // Mirrors the predicate the DOM-mutation effect below applies row-by-row,
-  // so the "X de Y slots" label updates in render without us having to call
-  // setState from the effect (which the react-hooks/set-state-in-effect rule
-  // flags as a cascading render).
-  const visibleCount = useMemo(() => {
+  // The one filter rule: which slots (by startTime) pass query + category +
+  // stage. Drives both the "X de Y slots" label and the row hiding in the
+  // effect below, so the two can never disagree.
+  const visible = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    let count = 0;
+    const out = new Set<string>();
     for (const slot of slots) {
       const sessions = [slot.both, slot.main, slot.escenario2].filter(
         (s): s is NonNullable<typeof s> => s !== undefined,
@@ -91,14 +89,12 @@ export default function AgendaToolbar({ slots }: AgendaToolbarProps) {
       const matchesStage =
         urlStage === "todo" || stages.includes("both") || stages.includes(urlStage);
 
-      if (matchesQuery && matchesCategory && matchesStage) count++;
+      if (matchesQuery && matchesCategory && matchesStage) out.add(slot.startTime);
     }
-    return count;
+    return out;
   }, [slots, query, activeCategories, urlStage]);
 
   useEffect(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
     // Drive CSS grid-template-columns collapse via the wrapper attribute.
     // CSS rules in globals.css read [data-stage-filter="main|escenario-2"]
     // and collapse [data-row-grid] / [data-header-grid] from 3 cols to 2.
@@ -114,17 +110,7 @@ export default function AgendaToolbar({ slots }: AgendaToolbarProps) {
 
     const rows = document.querySelectorAll<HTMLElement>("[data-slot]");
     rows.forEach((row) => {
-      const searchable = row.getAttribute("data-search") ?? "";
-      const categories = (row.getAttribute("data-categories") ?? "").split(",");
-      const stages = (row.getAttribute("data-stages") ?? "").split(",");
-      const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery);
-      const matchesCategory =
-        activeCategories.size === 0 || categories.some((c) => activeCategories.has(c));
-      // "both"-stage rows match any stage filter; otherwise the row must
-      // have a session in the selected stage to remain visible.
-      const matchesStage =
-        urlStage === "todo" || stages.includes("both") || stages.includes(urlStage);
-      row.hidden = !(matchesQuery && matchesCategory && matchesStage);
+      row.hidden = !visible.has(row.dataset.slot ?? "");
 
       // Cell-level filter: hide the stage cell whose category doesn't
       // match the active category set, and hide the stage cell that
@@ -143,7 +129,7 @@ export default function AgendaToolbar({ slots }: AgendaToolbarProps) {
         cell.style.display = cellMatchesStage && cellMatchesCategory ? "" : "none";
       });
     });
-  }, [query, activeCategories, urlStage]);
+  }, [visible, activeCategories, urlStage]);
 
   const toggleCategory = (id: string) => {
     setActiveCategories((prev) => {
@@ -245,7 +231,7 @@ export default function AgendaToolbar({ slots }: AgendaToolbarProps) {
             className="label-meta font-bold text-on-surface-variant"
             aria-live="polite"
           >
-            {visibleCount} de {totalSlots} slots
+            {visible.size} de {totalSlots} slots
           </span>
           {hasClientFilter && (
             <button

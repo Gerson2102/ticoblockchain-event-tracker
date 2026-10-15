@@ -1,3 +1,4 @@
+import { speakerLine } from "../../lib/session-time";
 import type { Session, SessionCategory } from "../../data/types";
 
 type SessionCardProps = {
@@ -22,11 +23,7 @@ export default function SessionCard({ session, stageLabel, variant = "column" }:
   const isBreak = session.category === "break" || session.category === "ceremony";
 
   const chip = CATEGORY_CHIP[session.category];
-  const speakerLine = session.speakerName
-    ? session.speakerOrg
-      ? `${session.speakerName} — ${session.speakerOrg}`
-      : session.speakerName
-    : session.speakerOrg;
+  const speaker = speakerLine(session);
 
   const hasLongDescription = (session.description?.length ?? 0) > 120;
 
@@ -89,13 +86,13 @@ export default function SessionCard({ session, stageLabel, variant = "column" }:
       </h3>
 
       {/* Speaker */}
-      {speakerLine && (
+      {speaker && (
         <p
           className={`label-meta text-[11px] font-bold ${
             isBreak ? "text-on-surface-variant" : "text-secondary"
           }`}
         >
-          {speakerLine}
+          {speaker}
         </p>
       )}
 

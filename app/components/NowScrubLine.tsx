@@ -1,4 +1,4 @@
-import { VENUE } from "../data/venue";
+import { EVENT_START_HHMM, getEventLocalDateTime } from "../lib/session-time";
 
 type NowScrubLineProps = {
   now: Date;
@@ -7,26 +7,15 @@ type NowScrubLineProps = {
   phase: "before" | "during" | "after";
 };
 
-function formatEventClock(now: Date): string {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: VENUE.timezoneName,
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(now);
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  return `${get("hour")}:${get("minute")}`;
-}
-
 // The "now" marker sliced into the chronological list. It functions as the
 // scrub head on a timeline: past rows sit above, upcoming rows sit below.
 // Visually: a crimson rule across the full list width with a mono label
 // anchored to the rail-node column.
 export default function NowScrubLine({ now, phase }: NowScrubLineProps) {
-  const clock = formatEventClock(now);
+  const clock = getEventLocalDateTime(now).hhmm;
   const label =
     phase === "before"
-      ? `AÚN NO · HOY ABRE 08:00`
+      ? `AÚN NO · HOY ABRE ${EVENT_START_HHMM}`
       : phase === "after"
         ? `FIN DE JORNADA · ${clock}`
         : `AHORA · ${clock}`;

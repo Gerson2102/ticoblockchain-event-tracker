@@ -129,6 +129,11 @@ export default function EnVivoView({ now, simulated }: EnVivoViewProps) {
             (s.status === "next" || s.status === "scheduled"),
         )
       : undefined;
+  const nextMain = sortedSessions.find(
+    (s) =>
+      s.stage !== "escenario-2" &&
+      (s.status === "next" || s.status === "scheduled"),
+  );
   const anchorIdx = mainLive
     ? sortedSessions.findIndex((s) => s.id === mainLive.id)
     : -1;
@@ -190,12 +195,21 @@ export default function EnVivoView({ now, simulated }: EnVivoViewProps) {
           headline={headline}
           progressPct={progressPct}
           nextUpSessions={nextUpSessions}
+          nextMain={nextMain}
           sponsorCallout={sponsorCallout}
           now={now}
         />
       )}
 
-      {phase === "after" && <HeroAfter totalSessions={sortedSessions.length} />}
+      {phase === "after" && (
+        <HeroAfter
+          totalSessions={
+            sortedSessions.filter(
+              (s) => s.category !== "break" && s.category !== "ceremony",
+            ).length
+          }
+        />
+      )}
 
       {phase === "during" && (
         <EnParaleloSection

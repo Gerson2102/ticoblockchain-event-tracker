@@ -5,6 +5,7 @@ import type { SponsorCallout as SponsorCalloutData } from "../../data/home-conte
 import { HERO_CONTENT } from "../../data/home-content";
 import { getMinutesUntilStart } from "../../lib/session-time";
 import type { Session } from "../../data/types";
+import { agendaHrefForStage } from "../../data/venue";
 import { MAX_STAGGER_LEVEL } from "../../lib/stagger";
 import AgendaPreviewRow from "../AgendaPreviewRow";
 import Icon from "../Icon";
@@ -16,9 +17,10 @@ type HeroDuringProps = {
   mainLive: Session | undefined;
   headline: { first: string; last: string };
   progressPct: number;
-  // Next 3 upcoming sessions across both tracks, used by both the
-  // "PRÓXIMA EN MAIN STAGE" strip (takes [0]) and the A CONTINUACIÓN rail.
+  // Next 3 upcoming sessions across both tracks (A CONTINUACIÓN rail).
   nextUpSessions: Session[];
+  // Next main-stage (or venue-wide) session for the "PRÓXIMA EN MAIN STAGE" strip.
+  nextMain: Session | undefined;
   sponsorCallout: SponsorCalloutData | null;
   now: Date;
 };
@@ -33,6 +35,7 @@ export default function HeroDuring({
   headline,
   progressPct,
   nextUpSessions,
+  nextMain,
   sponsorCallout,
   now,
 }: HeroDuringProps) {
@@ -96,13 +99,13 @@ export default function HeroDuring({
               <div className="label-meta sm:text-xs text-on-primary/60 mb-1">
                 PRÓXIMA EN MAIN STAGE
               </div>
-              {nextUpSessions[0] ? (
+              {nextMain ? (
                 <div className="flex items-baseline gap-3 flex-wrap">
                   <span className="font-display text-base sm:text-lg md:text-xl font-bold uppercase tracking-tight text-on-primary leading-tight">
-                    {nextUpSessions[0].title}
+                    {nextMain.title}
                   </span>
                   <span className="mono-data text-sm sm:text-base font-black text-secondary tracking-tighter">
-                    {nextUpSessions[0].startTime}
+                    {nextMain.startTime}
                   </span>
                 </div>
               ) : (
@@ -154,7 +157,7 @@ export default function HeroDuring({
 
         {mainLive && (
           <Link
-            href={`/agenda?stage=main#session-${mainLive.id}`}
+            href={`${agendaHrefForStage(mainLive.stage)}#session-${mainLive.id}`}
             className="block mb-5 pb-5 border-b-2 border-primary/15 group animate-fade-up stagger-3"
             aria-label={`Ahora en ${mainLive.stage === "main" ? "Main Stage" : "ambos escenarios"}: ${mainLive.title}`}
           >

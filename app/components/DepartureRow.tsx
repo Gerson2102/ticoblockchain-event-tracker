@@ -1,4 +1,5 @@
 import type { Session } from "../data/types";
+import { speakerLine } from "../lib/session-time";
 import StageBadge from "./StageBadge";
 import StatusBadge from "./StatusBadge";
 
@@ -61,11 +62,7 @@ export default function DepartureRow({
         : "text-primary group-hover:translate-x-1 transition-transform duration-300",
   ].join(" ");
 
-  const speakerLine = session.speakerName
-    ? session.speakerOrg
-      ? `${session.speakerName} — ${session.speakerOrg}`
-      : session.speakerName
-    : session.speakerOrg;
+  const speaker = speakerLine(session);
 
   const speakerClasses = [
     "label-meta sm:text-[11px] font-bold mt-2",
@@ -92,7 +89,7 @@ export default function DepartureRow({
       {/* Title + speaker */}
       <div className="col-start-3 md:col-start-4 row-start-1 md:row-start-auto min-w-0">
         <h5 className={titleClasses}>{session.title}</h5>
-        {speakerLine && <div className={speakerClasses}>{speakerLine}</div>}
+        {speaker && <div className={speakerClasses}>{speaker}</div>}
         {/* Stage badge appears on mobile under the title so the grid stays
             readable on narrow viewports. */}
         <div className="md:hidden mt-2">

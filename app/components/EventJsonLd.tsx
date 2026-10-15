@@ -1,14 +1,13 @@
 import { VENUE_DIRECTIONS } from "../data/home-content";
 import { SPEAKERS } from "../data/speakers";
 import { VENUE } from "../data/venue";
+import { EVENT_END_HHMM, EVENT_START_HHMM } from "../lib/session-time";
+import { SITE_URL } from "../lib/url";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ticoblockchain.cr";
-
-// Event window in America/Costa_Rica (UTC-6, no DST). Registration opens at
-// 08:00 CRT and the closing cocktail wraps around 20:00 — covering both ends
-// generously since Google uses these to power the SERP event card.
-const START_ISO = `${VENUE.eventDateISO}T08:00:00-06:00`;
-const END_ISO = `${VENUE.eventDateISO}T20:00:00-06:00`;
+// Event window in America/Costa_Rica (UTC-6, no DST), from the first session
+// start to the last session end — Google uses these for the SERP event card.
+const START_ISO = `${VENUE.eventDateISO}T${EVENT_START_HHMM}:00-06:00`;
+const END_ISO = `${VENUE.eventDateISO}T${EVENT_END_HHMM}:00-06:00`;
 
 // Server-rendered JSON-LD for the conference. Emitted as a <script> tag
 // inside the home page so Google's Event rich result + AI search engines
@@ -57,7 +56,7 @@ export default function EventJsonLd() {
         latitude: VENUE_DIRECTIONS.gps.lat,
         longitude: VENUE_DIRECTIONS.gps.lng,
       },
-      hasMap: VENUE.mapsUrl,
+      hasMap: VENUE_DIRECTIONS.mapsUrl,
     },
     organizer: {
       "@type": "Organization",

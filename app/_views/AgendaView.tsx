@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import DevTimeBanner from "../components/DevTimeBanner";
 import Icon from "../components/Icon";
 import LiveRefresh from "../components/LiveRefresh";
-import { getNextTransitionAt, getSessionsAt } from "../lib/session-time";
+import { getNextTransitionAt, getSessionById, getSessionsAt } from "../lib/session-time";
 import AgendaToolbar from "../agenda/_components/AgendaToolbar";
 import DualTrackTimeline from "../agenda/_components/DualTrackTimeline";
 import JumpToNow from "../agenda/_components/JumpToNow";
@@ -23,7 +23,7 @@ type AgendaViewProps = {
 // Stage filtering (`?stage=main|escenario-2`) is preserved as a shareable
 // URL but applied **client-side** by AgendaToolbar via DOM manipulation
 // against the `data-stage-filter` attribute on the wrapper and the
-// `data-stages` / `data-stage` attributes baked into each row/cell.
+// `data-slot` / `data-stage` attributes baked into each row/cell.
 export default function AgendaView({ now, simulated }: AgendaViewProps) {
   const nextTransitionAt = getNextTransitionAt(now);
 
@@ -31,6 +31,8 @@ export default function AgendaView({ now, simulated }: AgendaViewProps) {
     a.startTime.localeCompare(b.startTime),
   );
   const slots = groupByTimeSlot(sortedSessions);
+  const rosa = getSessionById("lunch-break-main");
+  const azul = getSessionById("lunch-break-esc2");
 
   return (
     <main
@@ -72,13 +74,12 @@ export default function AgendaView({ now, simulated }: AgendaViewProps) {
         <AgendaToolbar slots={slots} />
       </Suspense>
 
-      {/* Logistics strip — lunch runs in parallel to talks (not in SESSIONS),
-          so surface it once above the schedule as context rather than a card.
-          Split into two bracelet-keyed windows: ROSA 11:30—12:30, AZUL
-          12:30—13:30. Swatch colors are inlined arbitrary values (one-off
-          functional indicators, not part of the Horizonte Cobalt palette);
-          each window also carries the literal word "ROSA" / "AZUL" so the
+      {/* Logistics strip — lunch is two bracelet-keyed waves (ROSA, AZUL) read
+          from SESSIONS; surface it once above the schedule as context.
+          Swatch colors are inlined arbitrary values (one-off functional
+          indicators, not part of the Horizonte Cobalt palette); each window also carries the literal word "ROSA" / "AZUL" so the
           info is never communicated by color alone. */}
+      {rosa && azul && (
       <div className="mb-6 flex flex-col gap-2 sm:gap-3 border-l-4 border-secondary bg-surface-container-highest px-4 py-3 animate-fade-up">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
@@ -88,7 +89,7 @@ export default function AgendaView({ now, simulated }: AgendaViewProps) {
             </span>
           </div>
           <span className="mono-data text-[11px] font-bold text-primary shrink-0">
-            11:30 — 13:30
+            {rosa.time.slice(0, 5)} — {azul.time.slice(-5)}
           </span>
         </div>
         <div className="flex items-start gap-3">
@@ -98,7 +99,7 @@ export default function AgendaView({ now, simulated }: AgendaViewProps) {
           />
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-3 flex-1 min-w-0">
             <span className="mono-data text-[11px] font-bold text-primary tracking-widest shrink-0">
-              ROSA · 11:30 — 12:30
+              ROSA · {rosa.time}
             </span>
             <p className="text-xs sm:text-sm text-on-surface-variant">
               Servicio en el Restaurante para participantes con
@@ -113,7 +114,7 @@ export default function AgendaView({ now, simulated }: AgendaViewProps) {
           />
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-3 flex-1 min-w-0">
             <span className="mono-data text-[11px] font-bold text-primary tracking-widest shrink-0">
-              AZUL · 12:30 — 13:30
+              AZUL · {azul.time}
             </span>
             <p className="text-xs sm:text-sm text-on-surface-variant">
               Servicio en el Restaurante para participantes con
@@ -122,6 +123,7 @@ export default function AgendaView({ now, simulated }: AgendaViewProps) {
           </div>
         </div>
       </div>
+      )}
 
       {/* Dual-track timeline — always renders all slots; stage filter is
           applied client-side via DOM manipulation by AgendaToolbar. */}

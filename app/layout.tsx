@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
+import { SITE_URL } from "./lib/url";
 import { BRAND } from "./data/brand-colors";
 
 const inter = Inter({
@@ -25,7 +26,6 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ticoblockchain.cr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

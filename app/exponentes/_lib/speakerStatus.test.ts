@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { SPEAKERS } from "../../data/speakers";
+import { findSessionByTimeStage } from "../../lib/session-time";
 import { applyLiveStatus } from "./speakerStatus";
 
 // Build a wall-clock Date in Costa Rica (UTC-6, no DST).
@@ -64,29 +65,39 @@ describe("applyLiveStatus — event day", () => {
     const result = applyLiveStatus(SPEAKERS, crDate("16:20"));
     expect(findSpeaker(result, "carlos-rene").status).toBe("live");
     expect(findSpeaker(result, "cristian-guillen").status).toBe("live");
-    // Rogelio Martínez remains a confirmed event participant on time "Por
-    // anunciar", so he retains his seed "scheduled" status.
+    // Rogelio Martínez has time "Por anunciar" — scheduled until the event ends.
     expect(findSpeaker(result, "rogelio-martinez").status).toBe("scheduled");
   });
 
-  test("after the last keyed talk (19:00) — Por-anunciar speakers fall back to their seed status", () => {
+  test("after the last keyed talk (19:00) — Por-anunciar speakers are still scheduled", () => {
     const result = applyLiveStatus(SPEAKERS, crDate("19:00"));
-    // Rogelio Martínez has time "Por anunciar" — never matches a session, retains seed.
-    const rogelio = findSpeaker(result, "rogelio-martinez");
-    const seed = SPEAKERS.find((s) => s.id === "rogelio-martinez");
-    expect(rogelio.status).toBe(seed!.status);
+    expect(findSpeaker(result, "rogelio-martinez").status).toBe("scheduled");
   });
 });
 
 describe("applyLiveStatus — speakers without a matching session", () => {
-  test("Por anunciar speakers retain seed status at any moment", () => {
+  test("Por anunciar speakers are scheduled during the event", () => {
     const result = applyLiveStatus(SPEAKERS, crDate("12:00"));
     const tba = result.filter((s) => s.time === "Por anunciar");
     expect(tba.length).toBeGreaterThan(0);
-    for (const speaker of tba) {
-      const seed = SPEAKERS.find((s) => s.id === speaker.id);
-      expect(speaker.status).toBe(seed!.status);
+    for (const speaker of tba) expect(speaker.status).toBe("scheduled");
+  });
+
+  test("Por anunciar speakers are past the day after the event", () => {
+    const result = applyLiveStatus(SPEAKERS, crDate("12:00", "2026-05-15"));
+    for (const speaker of result.filter((s) => s.time === "Por anunciar")) {
+      expect(speaker.status).toBe("past");
     }
+  });
+});
+
+describe("speakers data link", () => {
+  test("every speaker with a time has a matching session", () => {
+    const orphans = SPEAKERS.filter(
+      (s) =>
+        s.time !== "Por anunciar" && !findSessionByTimeStage(s.time, s.stage),
+    ).map((s) => s.id);
+    expect(orphans).toEqual([]);
   });
 });
 

@@ -19,10 +19,6 @@ import { applyLiveStatus } from "../exponentes/_lib/speakerStatus";
 // carries the full lineup as compact rows.
 const FEATURED_NEXT_LIMIT = 2;
 
-function appearanceKey(a: SpeakerAppearance): string {
-  return `solo|${a.speaker.id}`;
-}
-
 function partitionAppearances(appearances: SpeakerAppearance[]): {
   featured: SpeakerAppearance[];
   rest: SpeakerAppearance[];
@@ -43,8 +39,8 @@ function partitionAppearances(appearances: SpeakerAppearance[]): {
     featuredKind = featured.length > 0 ? "scheduled-fallback" : "none";
   }
 
-  const featuredKeys = new Set(featured.map(appearanceKey));
-  const rest = appearances.filter((a) => !featuredKeys.has(appearanceKey(a)));
+  const featuredKeys = new Set(featured.map((a) => a.speaker.id));
+  const rest = appearances.filter((a) => !featuredKeys.has(a.speaker.id));
   return { featured, rest, featuredKind };
 }
 
@@ -154,7 +150,7 @@ export default function ExponentesView({ now, simulated }: ExponentesViewProps) 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {featured.map((appearance, i) => (
               <SpeakerCard
-                key={appearanceKey(appearance)}
+                key={appearance.speaker.id}
                 appearance={appearance}
                 staggerClass={`stagger-${Math.min(i + 1, MAX_STAGGER_LEVEL)}`}
                 priority={i === 0}

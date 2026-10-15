@@ -2,11 +2,14 @@ import { SESSIONS } from "../data/sessions";
 import type { Session, SessionStatus } from "../data/types";
 import { VENUE } from "../data/venue";
 
+// SESSIONS carries no status — it is computed from the clock (see below).
+type SessionEntry = Omit<Session, "status">;
+
 // Static lookup by id. Used by the sponsors page to resolve a sponsor's
 // session metadata (time, stage, title) without running the live status
 // pipeline — the sponsors page is purely informational and doesn't need
 // past/live/next promotion.
-export function getSessionById(id: string): Session | undefined {
+export function getSessionById(id: string): SessionEntry | undefined {
   return SESSIONS.find((s) => s.id === id);
 }
 
@@ -18,7 +21,7 @@ export function getSessionById(id: string): Session | undefined {
 export function findSessionByTimeStage(
   time: string,
   stage: Session["stage"],
-): Session | undefined {
+): SessionEntry | undefined {
   return SESSIONS.find(
     (s) => s.time === time && (s.stage === stage || s.stage === "both"),
   );
@@ -28,7 +31,7 @@ export function getSessionsAt(now: Date): Session[] {
   const statuses = computeSessionStatuses(SESSIONS, now);
   return SESSIONS.map((s) => ({
     ...s,
-    status: statuses.get(s.id) ?? s.status,
+    status: statuses.get(s.id) ?? "scheduled",
   }));
 }
 
@@ -39,22 +42,11 @@ export function getLiveSessions(now: Date): {
   main?: Session;
   escenario2?: Session;
 } {
-  let main: Session | undefined;
-  let escenario2: Session | undefined;
-
-  for (const s of getSessionsAt(now)) {
-    if (s.status !== "live") continue;
-    if (s.stage === "both") {
-      main = main ?? s;
-      escenario2 = escenario2 ?? s;
-    } else if (s.stage === "main") {
-      main = main ?? s;
-    } else if (s.stage === "escenario-2") {
-      escenario2 = escenario2 ?? s;
-    }
-  }
-
-  return { main, escenario2 };
+  const live = getSessionsAt(now).filter((s) => s.status === "live");
+  // A stage's own talk outranks a venue-wide break running in parallel (lunch waves).
+  const pick = (stage: "main" | "escenario-2") =>
+    live.find((s) => s.stage === stage) ?? live.find((s) => s.stage === "both");
+  return { main: pick("main"), escenario2: pick("escenario-2") };
 }
 
 // Next upcoming sessions across both tracks, sorted chronologically.
@@ -71,10 +63,13 @@ export function getNextSessions(count: number, now: Date): Session[] {
 // the event isn't actually running.
 type EventPhase = "before" | "during" | "after";
 
-// Event day runs 08:00–20:00 CRT. Registro opens at 08:00 and the Cóctel
-// de Cierre ends at 20:00 — the full window the live page should feel "hot."
-const EVENT_START_HHMM = "08:00";
-const EVENT_END_HHMM = "20:00";
+// Event window = earliest session start to latest session end, from SESSIONS
+// (Registro opening to Cóctel de Cierre end) so a schedule shift is one edit.
+const ranges = SESSIONS.map((s) => parseTimeRange(s.time)).filter(
+  (r): r is { start: string; end: string } => r !== null,
+);
+export const EVENT_START_HHMM = ranges.map((r) => r.start).sort()[0];
+export const EVENT_END_HHMM = ranges.map((r) => r.end).sort().at(-1)!;
 
 export function getEventPhase(now: Date): EventPhase {
   const nowLocal = getEventLocalDateTime(now);
@@ -178,19 +173,21 @@ function parseTimeRange(time: string): { start: string; end: string } | null {
 // Projects `now` into the event's local timezone and returns the date and
 // time as plain strings. Using formatToParts keeps comparisons timezone-safe
 // regardless of the server's system zone.
-function getEventLocalDateTime(now: Date): {
+const eventClock = new Intl.DateTimeFormat("en-CA", {
+  timeZone: VENUE.timezoneName,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+export function getEventLocalDateTime(now: Date): {
   dateISO: string;
   hhmm: string;
 } {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: VENUE.timezoneName,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(now);
+  const parts = eventClock.formatToParts(now);
   const get = (type: string) =>
     parts.find((p) => p.type === type)?.value ?? "";
   return {
@@ -200,25 +197,27 @@ function getEventLocalDateTime(now: Date): {
 }
 
 // Derives each session's status from the wall clock in the event timezone.
-// On pre/post event days, falls back to the literal demo status. On event
+// Off event day every session is "scheduled" (before) or "past" (after). On event
 // day, computes past/live/scheduled from session start/end, then promotes
 // the earliest "scheduled" per stage to "next".
 export function computeSessionStatuses(
-  sessions: readonly Session[],
+  sessions: readonly SessionEntry[],
   now: Date,
 ): Map<string, SessionStatus> {
   const result = new Map<string, SessionStatus>();
   const nowLocal = getEventLocalDateTime(now);
+  const offHours: SessionStatus =
+    getEventPhase(now) === "after" ? "past" : "scheduled";
 
   if (nowLocal.dateISO !== VENUE.eventDateISO) {
-    for (const s of sessions) result.set(s.id, s.status);
+    for (const s of sessions) result.set(s.id, offHours);
     return result;
   }
 
   for (const s of sessions) {
     const range = parseTimeRange(s.time);
     if (!range) {
-      result.set(s.id, s.status);
+      result.set(s.id, offHours);
       continue;
     }
     if (nowLocal.hhmm >= range.end) {
@@ -244,4 +243,13 @@ export function computeSessionStatuses(
   }
 
   return result;
+}
+
+// "Name — Org", or whichever of the two exists.
+export function speakerLine(
+  session: Pick<Session, "speakerName" | "speakerOrg">,
+): string | undefined {
+  return session.speakerName && session.speakerOrg
+    ? `${session.speakerName} — ${session.speakerOrg}`
+    : (session.speakerName ?? session.speakerOrg);
 }

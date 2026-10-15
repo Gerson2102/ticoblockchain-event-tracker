@@ -369,12 +369,6 @@ textarea:focus-visible,
   50% { border-left-color: color-mix(in srgb, var(--color-secondary) 50%, transparent); }
 }
 
-@keyframes pin-bounce {
-  0%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-12px); }
-  60% { transform: translateY(-4px); }
-}
-
 @keyframes heartbeat {
   0%, 28%, 70%, 100% { transform: scale(1); }
   14% { transform: scale(1.25); }
@@ -452,10 +446,6 @@ textarea:focus-visible,
   animation: border-breathe 2.5s ease-in-out infinite;
 }
 
-.animate-pin-bounce {
-  animation: pin-bounce 2s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
-}
-
 .animate-menu-slide-down {
   animation: menu-slide-down 0.2s ease-out both;
 }
@@ -474,15 +464,6 @@ textarea:focus-visible,
 .stagger-5 { --delay: 500ms; }
 .stagger-6 { --delay: 600ms; }
 .stagger-7 { --delay: 700ms; }
-
-/* Hover lift — subtle upward shift for interactive cards */
-.hover-lift {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.3s ease;
-}
-.hover-lift:hover {
-  transform: translateY(-4px);
-}
 
 /* Button hover shine — a sweep highlight */
 .btn-shine {

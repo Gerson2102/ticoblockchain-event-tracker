@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { agendaHrefForStage, stageShort } from "../data/venue";
 import { getSessionById } from "../lib/session-time";
 import {
   getSponsorsByTier,
@@ -438,22 +439,10 @@ function SponsorActivity({
       {sessions.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {sessions.map((session) => {
-            const stageQuery =
-              session.stage === "main"
-                ? "?stage=main"
-                : session.stage === "escenario-2"
-                  ? "?stage=escenario-2"
-                  : "";
-            const stageLabel =
-              session.stage === "main"
-                ? "MAIN"
-                : session.stage === "escenario-2"
-                  ? "ESC 2"
-                  : "AMBOS";
             return (
               <li key={session.id}>
                 <Link
-                  href={`/agenda${stageQuery}#session-${session.id}`}
+                  href={`${agendaHrefForStage(session.stage)}#session-${session.id}`}
                   className={`group flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 ${
                     variant === "diamante"
                       ? "hover:text-secondary-fixed-dim"
@@ -461,7 +450,7 @@ function SponsorActivity({
                   } transition-colors`}
                 >
                   <span className="font-mono text-xs sm:text-sm whitespace-nowrap">
-                    {session.time} · {stageLabel}
+                    {session.time} · {stageShort(session.stage)}
                   </span>
                   <span
                     className={`font-display font-bold text-base sm:text-lg leading-tight ${

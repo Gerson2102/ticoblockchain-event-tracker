@@ -6,6 +6,7 @@ import {
   type Sponsor,
   type SponsorTier,
 } from "../../data/sponsors";
+import { agendaHrefForStage } from "../../data/venue";
 import { getSessionById } from "../../lib/session-time";
 
 type SponsorRowProps = {
@@ -87,15 +88,9 @@ function SponsorActivitySummary({ sponsor }: { sponsor: Sponsor }) {
 
   if (sessions.length > 0) {
     const session = sessions[0];
-    const stageQuery =
-      session.stage === "main"
-        ? "?stage=main"
-        : session.stage === "escenario-2"
-          ? "?stage=escenario-2"
-          : "";
     return (
       <Link
-        href={`/agenda${stageQuery}#session-${session.id}`}
+        href={`${agendaHrefForStage(session.stage)}#session-${session.id}`}
         className="block truncate text-xs text-primary/80 hover:text-secondary transition-colors"
       >
         <span className="mono-data text-primary/60">{session.time}</span>

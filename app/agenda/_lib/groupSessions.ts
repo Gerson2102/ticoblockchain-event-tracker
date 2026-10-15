@@ -5,7 +5,6 @@ import type { Session } from "../../data/types";
 // or a pair of stage-specific sessions (one or both sides populated).
 export type TimeSlot = {
   startTime: string;
-  time: string;
   both?: Session;
   main?: Session;
   escenario2?: Session;
@@ -14,7 +13,7 @@ export type TimeSlot = {
 export function groupByTimeSlot(sessions: readonly Session[]): TimeSlot[] {
   const map = new Map<string, TimeSlot>();
   for (const s of sessions) {
-    const slot = map.get(s.startTime) ?? { startTime: s.startTime, time: s.time };
+    const slot = map.get(s.startTime) ?? { startTime: s.startTime };
     if (s.stage === "both") slot.both = s;
     else if (s.stage === "main") slot.main = s;
     else slot.escenario2 = s;
